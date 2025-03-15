@@ -1,0 +1,45 @@
+*creamos pallets de prueba*
+*chequeamos las funciones newP, destinationP y netP*
+p1 = newP "Rosario" 5
+p2 = newP "Buenos Aires" 10
+p3 = newP "La Plata" 3
+p4 = newP "San Fernando" 15
+d1 = destinationP p1
+d1
+"Rosario"
+n1 = netP p1
+n1
+5
+*creamos ruta de prueba*
+*chequeamos las funciones newR, addP, inOrderR*
+r1 = newR ["Rosario", "Buenos Aires", "La Plata", "San Fernando"]
+inOrderR r1 "Buenos Aires" "San Fernando"
+True
+inOrderR r1 "La Plata" "Rosario"
+False
+*creamos stack de prueba*
+*chequeamos las funciones newS freeCellsS stackS netS holdsS popS*
+s1 = newS 5
+freeCellsS s1
+s2 = stackS p4
+s2 = stackS s1 p4
+s3 = stackS s2 p3
+s4 = stackS s3 p2
+s5 = stackS s4 p1
+netS s5
+p_aux_1 = newP "General Pico" 13
+holdsS s5 p_aux_1 r1
+p_aux_2 = newP "Rosario" 4
+holdsS s5 p_aux_2 r1
+True
+r_aux = newR ["General Pico", "Rosario", "Buenos Aires", "La Plata", "San Fernando"]
+holdsS s5 p_aux_2 r_aux
+holdsS s5 p_aux_1 r_aux
+holdsS s5 p2 r_aux
+s6 = stackS s5 p_aux_1
+holdsS s6 p_aux_2 r_aux
+s_aux = popS s6 "Poronga"
+s_aux == s6
+s7 = popS s6 "General Pico"
+s8 = stackS s7 p_aux_2
+s9 = popS s8 "Rosario"

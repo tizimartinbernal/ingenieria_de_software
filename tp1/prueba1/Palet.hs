@@ -1,4 +1,5 @@
-module Palet (Palet, newP, destinationP, netP) where
+module Palet (Palet, newP, destinationP, netP)
+    where
 
 data Palet = Pal String Int deriving (Eq, Show)
 

@@ -55,7 +55,7 @@ newT bays height route = Tru (replicate bays (newS height)) route
 freeCellsT :: Truck -> Int
 freeCellsT (Tru stacks _) = sum (map freeCellsS stacks)
 
-loadT :: Truck -> Palet -> Truck
+--loadT :: Truck -> Palet -> Truck
 
 {-
 Acá no hacemos el chequeo porque no tenemos acceso a la ruta,
