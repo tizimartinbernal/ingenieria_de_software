@@ -43,6 +43,20 @@ holdsS (Sta pallets_list _) (Pal destination _) (Rou cities_list) | inOrderR (Ro
 popS :: Stack -> String -> Stack          -- quita del tope los paletes con destino en la ciudad indicada
 popS (Sta pallets_list capacity) destination = Sta ([y | y <- pallets_list, destinationP y /= destination]) capacity
 
+inRouteR :: Route -> String -> Bool -- Indica si la ciudad consultada está en la ruta
+inRouteR (Rou cities) city = elem city cities
+
+
+data Truck = Tru [ Stack ] Route deriving (Eq, Show)
+
+newT :: Int -> Int -> Route -> Truck -- construye un camion según una cantidad de bahias, la altura de las mismas y una ruta
+newT bays height route = Tru (replicate bays (newS height)) route
+
+freeCellsT :: Truck -> Int
+freeCellsT (Tru stacks _) = sum (map freeCellsS stacks)
+
+loadT :: Truck -> Palet -> Truck
+
 {-
 Acá no hacemos el chequeo porque no tenemos acceso a la ruta,
 Pero cuando hagamos la parte del camión hay que chequear si un
