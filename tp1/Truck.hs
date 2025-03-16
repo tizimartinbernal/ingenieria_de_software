@@ -38,3 +38,5 @@ netT (Tru stacks _) = mySum (myMap netS stacks)
 -- tenemos que chequear el caso en que nos esten queriendo sacar algo del camión y todavía queden cosas de estaciones anteriores?
 -- está buena nuestra implementación de loadT?
 -- siempre tenemos que devolver cosas de manera pasiva o agresiva o podemos mechar?
+-- chequeamos que una ruta tenga destinos?
+-- nuestra solución pasiva contra 
