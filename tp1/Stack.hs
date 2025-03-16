@@ -27,6 +27,7 @@ netS (Sta pallets_list capacity) = mySum (myMap netP pallets_list)
 -- Indica si la pila puede aceptar el palet considerando las ciudades en la ruta
 holdsS :: Stack -> Palet -> Route -> Bool
 holdsS (Sta pallets_list _) pallet route | not (inRouteR route (destinationP pallet)) = False
+                                         | myNull pallets_list = True
                                          | inOrderR route (destinationP pallet) (destinationP (myHead pallets_list)) = True
                                          | otherwise = False
 

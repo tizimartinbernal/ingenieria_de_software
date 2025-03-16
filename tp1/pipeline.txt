@@ -43,3 +43,25 @@ s_aux == s6
 s7 = popS s6 "General Pico"
 s8 = stackS s7 p_aux_2
 s9 = popS s8 "Rosario"
+* creamos camion de prueba *
+* chequeamos las funciones newT, freeCellsT, loadT, unloadT, netT*
+t1 = newT 3 3 r1
+t2 = loadT t1 p4
+t3 = loadT t2 p1
+t4 = loadT t3 p3
+netT t4
+23
+t5 = loadT t4 p2
+t6 = loadT t5 p3
+t7 = loadT t6 p4
+t6 == t7
+True
+t8 = loadT t7 p3
+t9 = loadT t8 p3
+t10 = loadT t9 p3
+t10 == t9
+True
+t11 = unloadT t10 "Rosario"
+t12 = unloadT t11 "Buenos Aires"
+t13 = unloadT t12 "La Plata"
+t14 = unloadT t13 "San Fernando"
