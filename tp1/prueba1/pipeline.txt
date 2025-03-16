@@ -38,7 +38,7 @@ holdsS s5 p_aux_1 r_aux
 holdsS s5 p2 r_aux
 s6 = stackS s5 p_aux_1
 holdsS s6 p_aux_2 r_aux
-s_aux = popS s6 "Poronga"
+s_aux = popS s6 "La Boca"
 s_aux == s6
 s7 = popS s6 "General Pico"
 s8 = stackS s7 p_aux_2
