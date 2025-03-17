@@ -37,3 +37,37 @@ testRoute = [testF (inOrderR (newR []) "Rosario" "Buenos Aires"), -- check empty
             inRouteR r1 "Buenos Aires", -- Buenos Aires is in the route
             not (inRouteR r1 "General Pico") -- General Pico is not in the route
             ]
+
+s1 = newS 5 -- create an empty stack with capacity 5
+s2 = stackS s1 p4 -- stack the pallet from San Fernando in the stack
+s3 = stackS s2 p3 -- stack the pallet from La Plata in the stack
+s4 = stackS s3 p2 -- stack the pallet from Buenos Aires in the stack
+s5 = stackS s4 p1 -- stack the pallet from Rosario in the stack
+
+s6 = stackS s5 (newP "General Pico" 13) -- stack the pallet from General Pico in the stack
+
+testStack = [testF (newS (-9)), -- check non positive capacity of a stack
+            freeCellsS s1 == 5, -- check free cells in an empty stack
+            freeCellsS s5 == 1, -- check free cells in the current stack
+            netS s1 == 0, -- check net weight in an empty stack
+            netS s5 == (5 + 10 + 3 + 15), -- check net weight in a full stack
+            not (holdsS s5 (newP "General Pico" 13) r1), -- check if the stack can hold a pallet with a destination that is not in the route
+            holdsS s5 (newP "Rosario" 4) r1, -- check if the stack can hold a pallet with a destination that is in the route and in order
+            not (holdsS s5 (newP "Rosario" 4) (newR ["General Pico", "Rosario", "Buenos Aires", "La Plata", "San Fernando"])),
+            -- check if the stack can hold a pallet with a destination that is in the route but not in order
+            holdsS s5 (newP "General Pico" 13) (newR ["General Pico", "Rosario", "Buenos Aires", "La Plata", "San Fernando"]),
+            -- check if the stack can hold a pallet with a destination that is in the route and in order
+            not (holdsS s6 (newP "General Pico" 13) (newR ["General Pico", "Rosario", "Buenos Aires", "La Plata", "San Fernando"])),
+            -- check if the full stack can hold a pallet with a destination that is in the route and in order
+            s6 == popS s6 "Victoria", -- check if the stack can pop something that is not in the stack #
+            s5 == popS s6 "General Pico" -- check if the stack can pop the pallet from General Pico #
+            ]
+
+t1 = newT 3 3 r1
+t2 = loadT t1 p4
+t3 = loadT t2 p1
+t4 = loadT t3 p3
+
+testTruck = [testF (newT (-9) 10 r1), -- check non positive value for bays
+            testF (newT 10 (-9) r1) -- check non positive value for height
+            ]

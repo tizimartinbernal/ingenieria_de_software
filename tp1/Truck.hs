@@ -10,7 +10,8 @@ data Truck = Tru [ Stack ] Route deriving (Eq, Show)
 
 -- Construye un camion según una cantidad de bahias, la altura de las mismas y una ruta
 newT :: Int -> Int -> Route -> Truck
-newT bays height route = Tru [newS height | y <- [1..bays]] route
+newT bays height route | bays <= 0 || height <= 0 = error "bays or height are not a positive value"
+                       | otherwise = Tru [newS height | y <- [1..bays]] route
 
 -- Responde la celdas disponibles en el camion
 freeCellsT :: Truck -> Int            
@@ -40,3 +41,5 @@ netT (Tru stacks _) = mySum (myMap netS stacks)
 -- siempre tenemos que devolver cosas de manera pasiva o agresiva o podemos mechar?
 -- chequeamos que una ruta tenga destinos?
 -- nuestra solución pasiva contra 
+-- hay algun problema si en vez de usar las funciones builtin tipo elem usamos las creadas por nosotros tipo myElem?
+-- SI PONEMOS EL FREECELLS EN HOLDS TENEMOS QUE SACARLO DEL CHEQUEO EN EL LOAD
