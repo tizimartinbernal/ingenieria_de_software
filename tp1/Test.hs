@@ -30,12 +30,11 @@ testPallet = [testF (newP "General Pico" (-9)), -- Check negative weight excepti
 
 r1 = newR ["Rosario", "Buenos Aires", "La Plata", "San Fernando"]
 
-testRoute = [testF (inOrderR (newR []) "Rosario" "Buenos Aires"), -- check empty route list
+testRoute = [testF (newR []), -- check empty route list
             testF (inOrderR r1 "Rosario" "General Pico"), -- check first city exists, second city does not.
             testF (inOrderR r1 "General Pico" "Rosario"), -- check second city exists, first city does not.
             inOrderR r1 "Buenos Aires" "San Fernando", -- must be true, Buenos Aires is before San Fernando. They are in order
             not (inOrderR r1 "La Plata" "Rosario"), -- must be false, La Plata is After Rosario. They are not in order 
-            not (inRouteR (newR []) "Rosario"), -- Rosario is not in an empty list
             inRouteR r1 "Buenos Aires", -- Buenos Aires is in the route
             not (inRouteR r1 "General Pico") -- General Pico is not in the route
             ]
@@ -53,7 +52,7 @@ testStack = [testF (newS (-9)), -- check non positive capacity of a stack
             freeCellsS s5 == 1, -- check free cells in the current stack
             netS s1 == 0, -- check net weight in an empty stack
             netS s5 == (5 + 10 + 3 + 15), -- check net weight in a full stack
-            not (holdsS s5 (newP "General Pico" 13) r1), -- check if the stack can hold a pallet with a destination that is not in the route
+            testF (holdsS s5 (newP "General Pico" 13) r1), -- check if the stack can hold a pallet with a destination that is not in the route
             holdsS s5 (newP "Rosario" 4) r1, -- check if the stack can hold a pallet with a destination that is in the route and in order
             not (holdsS s5 (newP "Rosario" 4) (newR ["General Pico", "Rosario", "Buenos Aires", "La Plata", "San Fernando"])),
             -- check if the stack can hold a pallet with a destination that is in the route but not in order
