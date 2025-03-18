@@ -14,16 +14,13 @@ freeCellsS :: Stack -> Int
 freeCellsS (Sta pallets_list capacity) = capacity - length pallets_list
 
 stackS :: Stack -> Palet -> Stack 
-stackS (Sta pallets_list capacity) pallet | freeCellsS (Sta pallets_list capacity) == 0 = error "No free cells"
-                                          | netS (Sta (pallet:pallets_list) capacity) > 10 = error "Net weight exceeds 10"
-                                          | otherwise = Sta (pallet:pallets_list) capacity
+stackS (Sta pallets_list capacity) pallet = Sta (pallet:pallets_list) capacity
 
 netS :: Stack -> Int
 netS (Sta pallets_list capacity) = sum (map netP pallets_list)
 
 holdsS :: Stack -> Palet -> Route -> Bool
-holdsS (Sta pallets_list capacity) pallet route | not (inRouteR route (destinationP pallet)) = error "Destination not in route"
-                                                | freeCellsS (Sta pallets_list capacity) == 0 = False
+holdsS (Sta pallets_list capacity) pallet route | freeCellsS (Sta pallets_list capacity) == 0 = False
                                                 | netS (Sta (pallet:pallets_list) capacity) > 10 = False
                                                 | null pallets_list = True
                                                 | otherwise = inOrderR route (destinationP pallet) (destinationP (head pallets_list))
@@ -32,7 +29,3 @@ popS :: Stack -> String -> Stack
 popS (Sta pallets_list capacity) destination | null pallets_list = Sta [] capacity
                                               | destinationP (head pallets_list) == destination = popS (Sta (tail pallets_list) capacity) destination
                                               | otherwise = Sta pallets_list capacity
-
-
--- quiero ver si se puede ver lo siguiente:
--- si no hay ningun pallet con la ciudad de destino, devolver un error "No pallet with that destination"

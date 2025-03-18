@@ -1,6 +1,6 @@
 Delivery
 
-modelamos el camion de una compañia de transporte de materiales de construccion en palets # palets como clase que tiene atributo peso?
+modelamos el camion de una compañia de transporte de materiales de construccion en palets
 El camion tiene una ruta establecida y una cantidad de bahias para estiba.
 Todas las bahias de un camión toleran la misma cantidad de palets apilados.
 
@@ -8,8 +8,8 @@ Al momento de llegar a uno de los destinos de su ruta tiene que poder descargar 
 Con lo cual al momento de cargar no puede apilarse un palet con destino posterior al que le queda de bajo.
 La carga de un palet se hace solo si hay una bahia que lo acepte
 
-Los palets tienen destino y peso en toneladas. # posibles atributos
-Una bahia no tolera apilar mas de 10 toneladas # restriccion de atributos
+Los palets tienen destino y peso en toneladas. 
+Una bahia no tolera apilar mas de 10 toneladas
 
 Al llegar a un destino el camion descarga todos los palets con ese destino 
 luego puede cargar mas palets, 
@@ -67,5 +67,3 @@ freeCellsT :: Truck -> Int            -- responde la celdas disponibles en el ca
 loadT :: Truck -> Palet -> Truck      -- carga un palet en el camion
 unloadT :: Truck -> String -> Truck   -- responde un camion al que se le han descargado los paletes que podían descargarse en la ciudad
 netT :: Truck -> Int                  -- responde el peso neto en toneladas de los paletes en el camion
-
-# la forma de representar el espacio del camión es mediante la pila
