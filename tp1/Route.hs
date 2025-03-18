@@ -1,27 +1,21 @@
 module Route ( Route, newR, inOrderR, inRouteR ) 
     where
 
-import AuxFunctions
-
 data Route = Rou [ String ] deriving (Eq, Show) 
 
--- Construye una ruta segun una lista de ciudades
 newR :: [ String ] -> Route 
-newR cities_list = Rou cities_list
-
--- Indica si la primer ciudad consultada esta antes que la segunda ciudad en la ruta
-checkCitiesOrder :: [String] -> String -> String -> Bool
-checkCitiesOrder cities_list city_1 city_2 | myNull cities_list = False
-                                         | myHead cities_list == city_1 = True
-                                         | myHead cities_list == city_2 = False
-                                         | otherwise = checkCitiesOrder (myTail cities_list) city_1 city_2
+newR cities_list | null cities_list = error "Route cannot be empty" 
+                 | otherwise = Rou cities_list
 
 inOrderR :: Route -> String -> String -> Bool
-inOrderR (Rou cities_list) city_1 city_2 | myNull cities_list = error "Empty list"
-                                         | not (inRouteR (Rou cities_list) city_1) || not (inRouteR (Rou cities_list) city_2) = error "Alguna ciudad no está en la ruta"
+inOrderR (Rou cities_list) city_1 city_2 | not (inRouteR (Rou cities_list) city_1) || 
+                                           not (inRouteR (Rou cities_list) city_2) = error "Some city is not in the route"
                                          | otherwise = checkCitiesOrder cities_list city_1 city_2
 
+checkCitiesOrder :: [String] -> String -> String -> Bool
+checkCitiesOrder cities_list city_1 city_2 | head cities_list == city_1 = True
+                                           | head cities_list == city_2 = False
+                                           | otherwise = checkCitiesOrder (tail cities_list) city_1 city_2
 
--- Indica si la ciudad consultada está en la ruta
 inRouteR :: Route -> String -> Bool 
-inRouteR (Rou cities) city = myElem city cities
+inRouteR (Rou cities) city = elem city cities

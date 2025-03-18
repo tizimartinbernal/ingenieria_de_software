@@ -5,6 +5,7 @@ import Truck
 import Control.Exception
 import System.IO.Unsafe
 import qualified Data.Type.Bool as Fernando
+import Distribution.Simple.Test (test)
 
 testF :: Show a => a -> Bool
 testF action = unsafePerformIO $ do
@@ -21,10 +22,11 @@ p2 = newP "Buenos Aires" 10
 p3 = newP "La Plata" 3
 p4 = newP "San Fernando" 15
 
-testPallet = [testF (newP "General Pico" (-9)), -- check negative weight exception
-    destinationP p1 == "Rosario", -- check pallet 1 destination
-    netP p1 == 5 -- check pallet 1 weight
-    ]
+testPallet = [testF (newP "General Pico" (-9)), -- Check negative weight exception
+              testF (newP "" 10), -- Check empty destination exception
+              destinationP p1 == "Rosario", -- Check pallet 1 destination
+              netP p1 == 5 -- Check pallet 1 weight
+            ]
 
 r1 = newR ["Rosario", "Buenos Aires", "La Plata", "San Fernando"]
 
@@ -62,12 +64,35 @@ testStack = [testF (newS (-9)), -- check non positive capacity of a stack
             s6 == popS s6 "Victoria", -- check if the stack can pop something that is not in the stack #
             s5 == popS s6 "General Pico" -- check if the stack can pop the pallet from General Pico #
             ]
+roma = "Roma"
+paris = "Paris"
+mdq = "Mar del Plata"
+berna = "Berna"
 
-t1 = newT 3 3 r1
-t2 = loadT t1 p4
-t3 = loadT t2 p1
-t4 = loadT t3 p3
+rutaCorta = newR [roma]
+rutaLarga = newR [roma, paris, mdq, berna]
 
-testTruck = [testF (newT (-9) 10 r1), -- check non positive value for bays
-            testF (newT 10 (-9) r1) -- check non positive value for height
-            ]
+paletRoma = newP roma 5
+paletParis = newP paris 3
+paletMdq = newP mdq 8
+paletInvalido = newP "Madrid" 7
+
+pilaVacia = newS 2
+pilaConUno = stackS pilaVacia paletRoma
+pilaLlena = stackS (stackS pilaVacia paletRoma) paletParis
+
+camionVacio = newT 2 2 rutaLarga
+camionConCarga = loadT (loadT camionVacio paletRoma) paletParis
+
+testTruck = [
+    freeCellsT camionVacio == 4,
+    freeCellsT camionConCarga == 2,
+    netT camionConCarga == 8,
+    freeCellsT (unloadT camionConCarga roma) == 3,
+    testF (newT 0 2 rutaLarga),
+    testF (newT 2 0 rutaLarga),
+    testF (newT (-1) 2 rutaLarga),
+    freeCellsT (loadT camionConCarga paletInvalido) == 2,
+    freeCellsT (loadT (loadT camionConCarga paletMdq) (newP mdq 8)) == 0,
+    netT (unloadT camionVacio roma) == 0
+  ]
