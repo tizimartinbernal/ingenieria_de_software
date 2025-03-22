@@ -27,5 +27,5 @@ holdsS (Sta pallets_list capacity) pallet route | freeCellsS (Sta pallets_list c
 
 popS :: Stack -> String -> Stack
 popS (Sta pallets_list capacity) destination | null pallets_list = Sta [] capacity
-                                              | destinationP (head pallets_list) == destination = popS (Sta (tail pallets_list) capacity) destination
-                                              | otherwise = Sta pallets_list capacity
+                                             | destinationP (head pallets_list) == destination = popS (Sta (tail pallets_list) capacity) destination
+                                             | otherwise = Sta pallets_list capacity

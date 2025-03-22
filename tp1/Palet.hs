@@ -5,7 +5,7 @@ data Palet = Pal String Int deriving (Eq, Show)
 
 newP :: String -> Int -> Palet
 newP destination weight | null destination = error "Destination must not be empty"
-                        | weight <= 0 = error "Weight must be a positive value"
+                        | weight <= 0 = error "Weight must be a positive value greater than 0"
                         | otherwise = Pal destination weight
                         
 destinationP :: Palet -> String 

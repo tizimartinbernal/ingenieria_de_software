@@ -9,7 +9,7 @@ data Truck = Tru [ Stack ] Route deriving (Eq, Show)
 
 newT :: Int -> Int -> Route -> Truck
 newT bays height route | bays <= 0 || height <= 0 = error "Bay and height must be positive values"
-                       | otherwise = Tru [newS height | y <- [1..bays]] route
+                       | otherwise = Tru (replicate bays (newS height)) route
 
 freeCellsT :: Truck -> Int            
 freeCellsT (Tru bays route) = sum (map freeCellsS bays)
