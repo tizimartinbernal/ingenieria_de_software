@@ -4,7 +4,6 @@ import Stack
 import Truck
 import Control.Exception
 import System.IO.Unsafe
-import Foreign (free)
 
 -- Test function that evaluates an action and returns True if an exception is thrown, False otherwise.
 testF :: Show a => a -> Bool
