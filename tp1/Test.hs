@@ -99,19 +99,19 @@ testStack = [
 -- Test for Truck.hs
 testTruck :: [Bool]
 testTruck = [
-             testF (newT 0 2 r1), -- Check non positive bays
-             testF (newT 2 0 r1), -- Check non positive height
-             testF (newT 0 0 r1), -- Check non positive bays and height
-             testF (newT (-1) 2 r1), -- Check negative bays
-             testF (newT 2 (-1) r1), -- Check negative height
-             testF (newT (-1) (-1) r1), -- Check negative bays and height
-             freeCellsT t1 == 12, -- Check free cells in an empty truck
-             freeCellsT (loadT t1 p1) == (12-1), -- Check free cells in the truck with a pallet
-             testF (loadT t1 (newP "General Pico" 1)), -- Check if the truck can load a pallet that is not in the route
-             testF (loadT t3 p3) && freeCellsT t3 /= 0, -- The truck is not full, but the stack can't hold the pallet from La Plata
-             freeCellsT t_full == 0, -- Check free cells in the full truck
-             testF (loadT t_full p1), -- Check if we can put something in the truck that is full
-             testF (loadT t3 (newP "Rosario" 10)), -- Check if we can put a pallet in t3 from Rosario but exceeds the net weight limit
+            testF (newT 0 2 r1), -- Check non positive bays
+            testF (newT 2 0 r1), -- Check non positive height
+            testF (newT 0 0 r1), -- Check non positive bays and height
+            testF (newT (-1) 2 r1), -- Check negative bays
+            testF (newT 2 (-1) r1), -- Check negative height
+            testF (newT (-1) (-1) r1), -- Check negative bays and height
+            freeCellsT t1 == 12, -- Check free cells in an empty truck
+            freeCellsT (loadT t1 p1) == (12-1), -- Check free cells in the truck with a pallet
+            testF (loadT t1 (newP "General Pico" 1)), -- Check if the truck can load a pallet that is not in the route
+            testF (loadT t3 p3) && freeCellsT t3 /= 0, -- The truck is not full, but the stack can't hold the pallet from La Plata
+            freeCellsT t_full == 0, -- Check free cells in the full truck
+            testF (loadT t_full p1), -- Check if we can put something in the truck that is full
+            testF (loadT t3 (newP "Rosario" 10)), -- Check if we can put a pallet in t3 from Rosario but exceeds the net weight limit
             netT t1 == 0, -- Check net weight in an empty truck
             netT t2 == (1+2+2+3), -- Check net weight in a truck with 4 pallets
             testF (unloadT t1 "Victoria"), -- Check if I can unload a city that is not in the route
