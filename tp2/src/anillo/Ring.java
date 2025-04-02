@@ -4,19 +4,17 @@ public class Ring {
     private static class Node {
         Object cargo;
         Node next;
+        Node prev;
 
         Node(Object cargo) {
             this.cargo = cargo;
-            this.next = this;  // Por defecto, se apunta a sí mismo (circular). Lo dejamos o lo sacamos y directamente lo inicializamos en add?
         }
     }
 
     private Node current;
-    private int size;
 
     public Ring() {
         this.current = null;
-        this.size = 0;
     }
 
     public Ring next() {
@@ -26,45 +24,42 @@ public class Ring {
         current = current.next;
         return this;
     }
-    
 
     public Object current() {
+        if (current == null) {
+            throw new RuntimeException("Ring is empty");
+        }
         return current.cargo;
     }
 
-    public Ring add( Object cargo ) {
-        if (size == 0) {
-            this.current = new Node(cargo);
-            this.size++;
-            return this.next();
+    public Ring add(Object cargo) {
+        Node newNode = new Node(cargo);
+        if (current == null) {
+            current = newNode;
+            current.next = current;
+            current.prev = current;
+        } else {
+            newNode.next = current;
+            newNode.prev = current.prev;
+            current.prev.next = newNode;
+            current.prev = newNode;
+            current = newNode;
         }
-        Node viejo_next = current.next;
-        Node nuevo_nodo = new Node( cargo );
-        current.next = nuevo_nodo;
-        nuevo_nodo.next = viejo_next;
-        size++;
-        return this.next();
-
+        return this;
     }
 
     public Ring remove() {
-        if (size == 0) {
-            throw new RuntimeException("Ring is empty");
-        } else if (size == 1) {
-            this.current = null;
-            this.size = 0;
+        if (current == null) {
             return this;
         }
-        Node viejo_next = current.next;
-        for (int i = 0 ; i < size - 1 ; i++) {
-            current = current.next;
+        if (current.next == current) {
+            current = null;
+        } else {
+            Node nextNode = current.next;
+            current.prev.next = current.next;
+            current.next.prev = current.prev;
+            current = nextNode;
         }
-        current.next = viejo_next;
-        size--;
-        return this.next();
+        return this;
     }
 }
-// cuando hacemos add tenemos que avanzar el current?
-// está bien el test 8?
-// Está bien nuestra implementación con current solamente o deberíamos tener head y last. Porque si no tenemos head y last o si no tenemos la lista doblemente enlazada el remove nos queda en O(n)
-// está bien nuestra idea del add y del remove? Porque nos anda casi todos pero el 8 y el 12 no.
