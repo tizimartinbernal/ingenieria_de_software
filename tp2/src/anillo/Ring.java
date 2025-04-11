@@ -1,65 +1,114 @@
 package anillo;
 
 public class Ring {
-    private static class Node {
-        Object cargo;
-        Node next;
-        Node prev;
+    public static final String CurrentLinkInEmptyRing = "Error. The link cannot be accessed because the ring is empty.";
+    public static final String NextLinkInEmptyRing = "Error. The next link cannot be accessed because the ring is empty.";
+    // Agregué esto para los errores porque vi que Emilio lo hizo así cuando nos mandó el video de ejemplo de parcial. 
 
-        Node(Object cargo) {
-            this.cargo = cargo;
+    private Link current;
+
+    // Interfaz base para eslabón
+    private interface Link {
+        Object getCargo();
+        Link getNext();
+        Link add(Object cargo);
+        Link remove();
+    }
+
+    // Eslabón nulo para representar un anillo vacío
+    private static class NullLink implements Link {
+        @Override
+        public Object getCargo() {
+            throw new RuntimeException(CurrentLinkInEmptyRing);
+        }
+
+        @Override
+        public Link getNext() {
+            throw new RuntimeException(NextLinkInEmptyRing);
+        }
+
+        @Override
+        public Link add(Object cargo) {
+            RegularLink newLink = new RegularLink(cargo);
+            newLink.next = newLink;
+            newLink.prev = newLink;
+            return newLink;
+        }
+
+        @Override
+        public Link remove() {
+            return this;
         }
     }
 
-    private Node current;
+    // Eslabón regular para anillos con elementos
+    private static class RegularLink implements Link {
+        private final Object cargo;
+        private Link next;
+        private Link prev;
 
+        RegularLink(Object cargo) {
+            this.cargo = cargo;
+        }
+
+        @Override
+        public Object getCargo() {
+            return cargo;
+        }
+
+        @Override
+        public Link getNext() {
+            return next;
+        }
+
+        @Override
+        public Link add(Object newCargo) {
+            RegularLink newLink = new RegularLink(newCargo);
+            newLink.next = this;
+            newLink.prev = this.prev;
+            ((RegularLink)this.prev).next = newLink;
+            this.prev = newLink;
+            return newLink;
+        }
+
+        @Override
+        public Link remove() {
+            Link nextLink = this.next;
+
+            // Verificar si este es el último eslabón en el anillo
+            boolean isLastLink = this == this.next;
+
+            if (isLastLink) {
+                return new NullLink();
+            } else {
+                ((RegularLink)this.prev).next = this.next;
+                ((RegularLink)this.next).prev = this.prev;
+                return nextLink;
+            }
+        }
+    }
+
+    // Métodos del anillo
     public Ring() {
-        this.current = null;
+        this.current = new NullLink();
     }
 
     public Ring next() {
-        if (current == null) {
-            throw new RuntimeException("Ring is empty");
-        }
-        current = current.next;
+        current = current.getNext();
         return this;
     }
 
     public Object current() {
-        if (current == null) {
-            throw new RuntimeException("Ring is empty");
-        }
-        return current.cargo;
+        return current.getCargo();
     }
 
     public Ring add(Object cargo) {
-        Node newNode = new Node(cargo);
-        if (current == null) {
-            current = newNode;
-            current.next = current;
-            current.prev = current;
-        } else {
-            newNode.next = current;
-            newNode.prev = current.prev;
-            current.prev.next = newNode;
-            current.prev = newNode;
-            current = newNode;
-        }
+        current = current.add(cargo);
         return this;
     }
 
     public Ring remove() {
-        if (current == null) {
-            return this;
-        }
-        if (current.next == current) {
-            current = null;
-        } else {
-            Node nextNode = current.next;
-            current.prev.next = current.next;
-            current.next.prev = current.prev;
-            current = nextNode;
-        }
+        current = current.remove();
         return this;
     }
 }
