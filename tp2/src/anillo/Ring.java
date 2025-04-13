@@ -1,14 +1,15 @@
 package anillo;
 
 import java.util.Stack;
+import java.util.function.Function;
 
 public class Ring {
     private Link current;
-    private Stack<RemoveStrategy> behaviors = new Stack<>();
+    private Stack<Function<RegularLink, Link>> behaviors = new Stack<>();
 
     public Ring() {
         this.current = new NullLink();
-        behaviors.push(new FinalLinkRemovalStrategy());
+        behaviors.push(link -> new NullLink());
     }
 
     public Ring next() {
@@ -21,8 +22,13 @@ public class Ring {
     }
 
     public Ring add(Object cargo) {
+        behaviors.push(link -> {
+            RegularLink next = link.getNext();
+            link.getPrev().setNext(next);
+            next.setPrev(link.getPrev());
+            return next;
+        });
         current = current.add(cargo);
-        behaviors.push(new RegularLinkRemovalStrategy());
         return this;
     }
 
