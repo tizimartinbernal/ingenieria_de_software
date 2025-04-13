@@ -1,5 +1,4 @@
 package anillo;
-
 import java.util.Stack;
 
 public class Ring {
@@ -8,6 +7,30 @@ public class Ring {
     private static String RemoveInEmptyRing = "Error. Cannot remove a link in an empty ring.";
     private Link current;
     private Stack<Link> behaviors = new Stack<Link>();
+
+    public Ring() {
+        this.current = new NullLink();
+        behaviors.push(current);
+    }
+
+    public Ring next() {
+        current = current.getNext();
+        return this;
+    }
+
+    public Object current() {
+        return current.getCargo();
+    }
+
+    public Ring add(Object cargo) {
+        current = current.add(cargo);
+        return this;
+    }
+
+    public Ring remove() {
+        current = current.remove();
+        return this;
+    }
 
     public abstract class Link {
         public abstract Object getCargo();
@@ -60,32 +83,11 @@ public class Ring {
             return nextlink;
         }
     }
-    public Ring() {
-        this.current = new NullLink();
-        behaviors.push(current);
-    }
 
-    public Ring next() {
-        current = current.getNext();
-        return this;
-    }
-
-    public Object current() {
-        return current.getCargo();
-    }
-
-    public Ring add(Object cargo) {
-        current = current.add(cargo);
-        return this;
-    }
-
-    public Ring remove() {
-        current = current.remove();
-        return this;
-    }
 }
 // tenemos que:
 // ver si los getters son necesarios
 // ver si los mensajes son necesarios
 // ver de separar en dos archivos las cosas
 // ver en caso cuando va public, private y lo de static y eso.
+// ver si está bien pensado y si no hace falta separar en dos archivos
