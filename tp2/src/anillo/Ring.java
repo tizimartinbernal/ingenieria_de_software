@@ -4,7 +4,7 @@ import java.util.Stack;
 
 public class Ring {
     private Link current;
-    private Stack<RemoveStrategy> behaviors = new Stack<RemoveStrategy>();
+    private Stack<RemoveStrategy> behaviors = new Stack<>();
 
     public Ring() {
         this.current = new NullLink();

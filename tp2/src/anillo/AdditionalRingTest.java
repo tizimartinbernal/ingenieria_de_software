@@ -8,8 +8,18 @@ import org.junit.jupiter.api.Test;
 // Revisión de casos no contemplados en RingTest.java
 public class AdditionalRingTest {
 
-    @Test void testAdd01RemoveinEmptyRing(){
-        assertThrows(Exception.class, () -> new Ring().remove().remove());
+    @Test void testAdd00RemoveinEmptyRing(){
+        assertThrows(Exception.class, () -> new Ring().remove());
+    }
+
+    @Test void test01RemoveUntilEmpty() {
+        assertThrows(Exception.class, () -> new Ring().add("Mateo")
+                                                .add("Manuela")
+                                                .add("Tiziano")
+                                                .remove()
+                                                .remove()
+                                                .remove()
+                                                .current());
     }
 
     @Test void testAdd02FromARingWithElementToAnEmptyRing(){
@@ -36,5 +46,17 @@ public class AdditionalRingTest {
                                                  .next()
                                                  .next()
                                                  .current());
+    }
+
+    @Test void testAdd04InsertInMiddleKeepsRingIntact() {
+        assertEquals("C", new Ring().add("A")
+                                             .add("B")
+                                             .add("C")
+                                             .next()
+                                             .add("X")
+                                             .next()
+                                             .next()
+                                             .next()
+                                             .current());
     }
 }

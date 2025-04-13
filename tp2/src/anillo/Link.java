@@ -22,7 +22,7 @@ class NullLink extends Link {
     public static String ERROR_CURRENT = "Error. The link cannot be accessed because the ring is empty.";
     public static String ERROR_NEXT = "Error. The next link cannot be accessed because the ring is empty.";
     public static String ERROR_PREV = "Error. The prev link cannot be accessed because the ring is empty.";
-    public static String ERROR_REMOVE = "Error. Cannot remove a link in an empty ring.";
+    public static String ERROR_REMOVE = "Error. The link cannot be removed because the ring is empty.";
 
     public Object getCargo() {
         throw new RuntimeException(ERROR_CURRENT);
@@ -95,7 +95,7 @@ class RegularLink extends Link {
     }
 
     public Link remove(Stack<RemoveStrategy> behaviors) {
-        return behaviors.peek().remove(this);
+        return behaviors.peek().removeLink(this);
     }
 }
 
