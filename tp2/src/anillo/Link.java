@@ -4,46 +4,62 @@ import java.util.Stack;
 
 public abstract class Link {
     public abstract Object getCargo();
+
     public abstract Link getNext();
+
+    public abstract void setNext(Link link);
+
+    public abstract Link getPrev();
+
+    public abstract void setPrev(Link link);
+
     public abstract Link add(Object cargo);
-    public abstract Link remove(Stack<RemoveType> behaviors);
+
+    public abstract Link remove(Stack<RemoveStrategy> behaviors);
 }
 
 class NullLink extends Link {
-    private final String currentError;
-    private final String nextError;
-    private final String removeError;
-
-    public NullLink(String currentError, String nextError, String removeError) {
-        this.currentError = currentError;
-        this.nextError = nextError;
-        this.removeError = removeError;
-    }
+    public static String ERROR_CURRENT = "Error. The link cannot be accessed because the ring is empty.";
+    public static String ERROR_NEXT = "Error. The next link cannot be accessed because the ring is empty.";
+    public static String ERROR_PREV = "Error. The prev link cannot be accessed because the ring is empty.";
+    public static String ERROR_REMOVE = "Error. Cannot remove a link in an empty ring.";
 
     public Object getCargo() {
-        throw new RuntimeException(currentError);
+        throw new RuntimeException(ERROR_CURRENT);
     }
 
     public Link getNext() {
-        throw new RuntimeException(nextError);
+        throw new RuntimeException(ERROR_NEXT);
+    }
+
+    public void setNext(Link link) {
+        throw new RuntimeException(ERROR_NEXT);
+    }
+
+    public Link getPrev() {
+        throw new RuntimeException(ERROR_PREV);
+    }
+
+    public void setPrev(Link link) {
+        throw new RuntimeException(ERROR_PREV);
     }
 
     public Link add(Object cargo) {
         RegularLink newLink = new RegularLink(cargo);
-        newLink.next = newLink;
-        newLink.prev = newLink;
+        newLink.setNext(newLink);
+        newLink.setPrev(newLink);
         return newLink;
     }
 
-    public Link remove(Stack<RemoveType> behaviors) {
-        throw new RuntimeException(removeError);
+    public Link remove(Stack<RemoveStrategy> behaviors) {
+        throw new RuntimeException(ERROR_REMOVE);
     }
 }
 
 class RegularLink extends Link {
-    public Object cargo;
-    public Link next;
-    public Link prev;
+    private Object cargo;
+    private Link next;
+    private Link prev;
 
     public RegularLink(Object cargo) {
         this.cargo = cargo;
@@ -57,16 +73,29 @@ class RegularLink extends Link {
         return next;
     }
 
+    public void setNext(Link next) {
+        this.next = next;
+    }
+
+    public Link getPrev() {
+        return prev;
+    }
+
+    public void setPrev(Link prev) {
+        this.prev = prev;
+    }
+
     public Link add(Object cargo) {
         RegularLink newLink = new RegularLink(cargo);
-        newLink.next = this;
-        newLink.prev = this.prev;
-        ((RegularLink) this.prev).next = newLink;
-        this.prev = newLink;
+        newLink.setNext(this);
+        newLink.setPrev(this.prev);
+        this.prev.setNext(newLink);
+        this.setPrev(newLink);
         return newLink;
     }
 
-    public Link remove(Stack<RemoveType> behaviors) {
+    public Link remove(Stack<RemoveStrategy> behaviors) {
         return behaviors.peek().remove(this);
     }
 }
+

@@ -3,16 +3,12 @@ package anillo;
 import java.util.Stack;
 
 public class Ring {
-    private static final String CurrentLinkInEmptyRing = "Error. The link cannot be accessed because the ring is empty.";
-    private static final String NextLinkInEmptyRing = "Error. The next link cannot be accessed because the ring is empty.";
-    private static final String RemoveInEmptyRing = "Error. Cannot remove a link in an empty ring.";
-
     private Link current;
-    private Stack<RemoveType> behaviors = new Stack<>();
+    private Stack<RemoveStrategy> behaviors = new Stack<RemoveStrategy>();
 
     public Ring() {
-        this.current = new NullLink(CurrentLinkInEmptyRing, NextLinkInEmptyRing, RemoveInEmptyRing);
-        behaviors.push(new RemoveFinalLink(CurrentLinkInEmptyRing, NextLinkInEmptyRing, RemoveInEmptyRing));
+        this.current = new NullLink();
+        behaviors.push(new FinalLinkRemovalStrategy());
     }
 
     public Ring next() {
@@ -26,7 +22,7 @@ public class Ring {
 
     public Ring add(Object cargo) {
         current = current.add(cargo);
-        behaviors.push(new RemoveRegularLink());
+        behaviors.push(new RegularLinkRemovalStrategy());
         return this;
     }
 
