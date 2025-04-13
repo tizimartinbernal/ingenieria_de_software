@@ -1,16 +1,20 @@
 package anillo;
 
+import java.util.Stack;
+
 public class Ring {
-    public static String CurrentLinkInEmptyRing = "Error. The link cannot be accessed because the ring is empty.";
-    public static String NextLinkInEmptyRing = "Error. The next link cannot be accessed because the ring is empty.";
-    public static String RemoveAnEmptyRing = "Error. Cannot remove a link in an empty ring.";
+    private static String CurrentLinkInEmptyRing = "Error. The link cannot be accessed because the ring is empty.";
+    private static String NextLinkInEmptyRing = "Error. The next link cannot be accessed because the ring is empty.";
+    private static String RemoveInEmptyRing = "Error. Cannot remove a link in an empty ring.";
     private Link current;
+    private Stack<Link> behaviors = new Stack<Link>();
 
     public abstract class Link {
         public abstract Object getCargo();
         public abstract Link getNext();
         public abstract Link add(Object cargo);
         public abstract Link remove();
+        public abstract Link action(RegularLink regularLink);
     }
 
     public class NullLink extends Link{
@@ -20,9 +24,11 @@ public class Ring {
             RegularLink newLink = new RegularLink(cargo);
             newLink.next = newLink;
             newLink.prev = newLink;
+            behaviors.push(newLink);
             return newLink;
         }
-        public Link remove() {throw new RuntimeException(RemoveAnEmptyRing);}
+        public Link remove() {throw new RuntimeException(RemoveInEmptyRing);}
+        public Link action(RegularLink regularLink) {return this;}
     }
 
     public class RegularLink extends Link{
@@ -39,24 +45,24 @@ public class Ring {
             newLink.prev = this.prev;
             ((RegularLink)this.prev).next = newLink;
             this.prev = newLink;
+            behaviors.push(newLink);
             return newLink;
         }
         public Link remove(){
-            Link nextLink = this.next;
-            boolean isLastLink = this == this.next;
+            behaviors.pop();
+            return behaviors.peek().action(this);
+        }
 
-            if (isLastLink) {
-                return new NullLink();
-            }
-            else {
-                ((RegularLink)this.prev).next = this.next;
-                ((RegularLink)this.next).prev = this.prev;
-                return nextLink;
-            }
+        public Link action(RegularLink regularLink) {
+            Link nextlink = regularLink.next;
+            ((RegularLink)regularLink.prev).next = regularLink.next;
+            ((RegularLink)regularLink.next).prev = regularLink.prev;
+            return nextlink;
         }
     }
     public Ring() {
         this.current = new NullLink();
+        behaviors.push(current);
     }
 
     public Ring next() {
@@ -78,3 +84,8 @@ public class Ring {
         return this;
     }
 }
+// tenemos que:
+// ver si los getters son necesarios
+// ver si los mensajes son necesarios
+// ver de separar en dos archivos las cosas
+// ver en caso cuando va public, private y lo de static y eso.
