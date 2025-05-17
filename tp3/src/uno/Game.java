@@ -57,4 +57,10 @@ public class Game {
 
     public Game wildCardAction() { return this; }
 
+    public void playCard(Card card) {
+        // hay dos posibilidades: que la pueda poner o que no
+        // si la puede poner, la pone (sale de su mano y entra al pit) y actualiza el pit
+        // si no la puede poner, no hace nada
+    }
+
 }

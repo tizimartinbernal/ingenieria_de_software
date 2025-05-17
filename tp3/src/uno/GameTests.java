@@ -53,6 +53,7 @@ public class GameTests {
         Game game = new Game(cards, numberToDeal, "Juan", "Paco", "Pedro");
         assertEquals(new NumberedCard("1", "yellow"), game.getPileCard());
     }
+
 }
 
 /*
@@ -60,8 +61,6 @@ Tests:
 Se mandan también!
 
 * Alguna duda de funcionalidad? Ver el juego de minijuegos que nos pasó Emilio!
-* Una cosa es cómo es el juego en realidad (108 cartas, 7 a c/u, etc) y otra cosa son las implementaciones.
-- Lo que quiero decir con esto que tenemos que poder abstraernos de ese número, y que repartamos X cartas, juguemos con un mazo de Y cartas, etc.
 * Otro method que tendríamos que tener es el de poder repartirle cartas a un jugador .repartir(Juan, [R1, B2, G3])
 * Pienso que tal vez podríamos tener otro méthod interno que permita repartir cartas a todos los jugadores dado un mazo, capaz no, ni idea.
 * Por la funcionalidad del juego, preguntar por la carta que está en el pozo se queda corto, tendríamos que poder ir más granular y poder preguntar
@@ -78,11 +77,6 @@ Tipos de constructores:
 * Uno de esos constructores puede tener la cantidad de cartas que se le reparten a cada jugador: Game(cards, players, 7) por ejemplo
 * Otro puede tener simplemente la cantidad de jugadores y el mazo de cartas: Game(cards, players) y reparte 7 a cada uno
 * Otro puede tener solo los jugadores: Game(players) y reparte 7 a cada uno con el mazo completo de 108 cartas
-
-La idea de comparar cartas definiendo un .equals en cartas está bien!!!
-
-
-Desarrollar la lógica de una partida del juego del uno.
 
 Las cartas a considerar en el juego:
 - Todas las cartas numeradas.
