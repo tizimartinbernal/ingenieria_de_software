@@ -21,6 +21,30 @@ public class Game {
 
     public Card getPileCard(){ return pileCard; } // acá tendría que hacer el chequeo de si hay cartas. Preguntarle a emilio, por el tema ese de que al agregar eso no construimos funcionalidad y agregamos ifs
 
+    public Game normalCardDraw(String playerName, Card card) {
+        // 1–2) filtro y excepciono sin usar ifs
+        Player current = players.stream()
+                // me quedo sólo con el primero de la lista
+                .limit(1)
+                .filter(p -> p.getName().equals(playerName))
+                // compruebo que tenga la carta en la mano
+                .filter(p -> p.getHand().contains(card))
+                // si no encuentro a nadie, lanzo excepción
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(
+                        "No es tu turno o no tienes esa carta: " + playerName + " / " + card
+                ));
+
+        // 3a) saco la carta de la mano
+        current.getHand().remove(card);
+        // 3b) actualizo la pila
+        this.pileCard = card;
+        // 3c) roto la lista de jugadores para pasar el turno
+        Collections.rotate(players, -1);
+
+        // 4) devuelvo el mismo juego, pero con el turno ya movido
+        return this;
+    }
 
     // Falta Implementar
     public Game numberedCardAction() { return this; }

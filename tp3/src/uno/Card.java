@@ -137,7 +137,7 @@ class WildCard extends ColoredCard { ;
 
    public String getSymbol() { return this.getClass().getSimpleName(); }
 
-   public boolean canStackOn(Card card) { return card.likeColor(this.getColor()) || card.likeSymbol(this.getSymbol()); }
+   public boolean canStackOn(Card card) { return card.likeColor(this.getColor()) || card.likeSymbol(this.getSymbol()); } // Puede ser que el or sea la pedo
 
    public boolean likeNumber(String number) { return true; }
 
