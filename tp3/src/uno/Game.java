@@ -24,4 +24,14 @@ public class Game {
 
     public Card pit(){return currentCard;} // acá tendría que hacer el chequeo de si hay cartas. Preguntarle a emilio, por el tema ese de que al agregar eso no construimos funcionalidad y agregamos ifs
 
+    public Game numberedCardAction() { return this; }
+
+    public Game drawTwoCardAction() { return this; }
+
+    public Game skipCardAction() { return this; }
+
+    public Game reverseCardAction() { return this; }
+
+    public Game wildCardAction() { return this; }
+
 }

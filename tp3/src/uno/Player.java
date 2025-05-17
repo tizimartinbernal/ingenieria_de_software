@@ -12,5 +12,7 @@ public class Player {
         this.cards.addAll(cards);
     }
 
-    public String getName() {return name;}
+    public String getName() {return name;} //No se si es necesario
+
+    public List<Card> getCards() {return cards;} //No se si es necesario
 }
