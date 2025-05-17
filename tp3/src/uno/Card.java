@@ -10,6 +10,8 @@ public abstract class Card {
    public abstract boolean likeSymbol(String symbol);
 
    public abstract Game cardAction(Game game);
+
+   public abstract boolean equals(Object obj); // Método equals abstracto
 }
 
 abstract class ColoredCard extends Card {
@@ -20,6 +22,13 @@ abstract class ColoredCard extends Card {
    public String getColor() { return color; }
 
    public boolean likeColor(String color) { return this.getColor().equals(color); }
+
+   public boolean equals(Object obj) {
+      if (this == obj) return true;
+      if (obj == null || getClass() != obj.getClass()) return false;
+      ColoredCard other = (ColoredCard) obj;
+      return color.equals(other.color);
+   }
 }
 
 abstract class ColorlessCard extends Card {
@@ -28,6 +37,9 @@ abstract class ColorlessCard extends Card {
 
    public boolean canStackOn(Card card) { return true; }
 
+   public boolean equals(Object obj) {
+      return obj != null && getClass() == obj.getClass();
+   }
 }
 
 class ColorlessWildCard extends ColorlessCard {
@@ -40,6 +52,9 @@ class ColorlessWildCard extends ColorlessCard {
 
    public Game cardAction(Game game) { return game.wildCardAction(); } // Simplemete return this
 
+   public boolean equals(Object obj) {
+      return super.equals(obj);
+   }
 }
 
 class NumberedCard extends ColoredCard {
@@ -61,6 +76,13 @@ class NumberedCard extends ColoredCard {
    public boolean likeSymbol(String symbol) { return this.getSymbol().equals(symbol); }
 
    public Game cardAction(Game game) { return game.numberedCardAction(); }
+
+   public boolean equals(Object obj) {
+      if (!super.equals(obj)) return false;
+      if (!(obj instanceof NumberedCard)) return false;
+      NumberedCard other = (NumberedCard) obj;
+      return number.equals(other.number);
+   }
 }
 
 class DrawTwoCard extends ColoredCard {
@@ -75,6 +97,10 @@ class DrawTwoCard extends ColoredCard {
    public boolean likeSymbol(String symbol) { return this.getSymbol().equals(symbol); }
 
    public Game cardAction(Game game) { return game.drawTwoCardAction(); }
+
+   public boolean equals(Object obj) {
+      return super.equals(obj) && obj instanceof DrawTwoCard;
+   }
 }
 
 class SkipCard extends ColoredCard {

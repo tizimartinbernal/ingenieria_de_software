@@ -6,24 +6,23 @@ import java.util.Arrays;
 import java.util.Stack;
 
 public class Game {
-    private List <Card> cards = new Stack<>();
+    private List <Card> cardDeck = new Stack<>();
     private List <Player> players = new ArrayList<>();
-    private Card currentCard;
+    private Card pileCard;
 
     public Game(List<Card> cards, int numberToDeal, String... players) {
-        this.cards.addAll(cards);
-        this.currentCard = this.cards.removeFirst(); // saca la primera carta de la lista y la asigna a currentCard
-        this.players = Arrays.stream(players)
-                .map(name -> {
-                    List<Card> hand = new ArrayList<>(this.cards.subList(0, numberToDeal));
-                    this.cards.subList(0, numberToDeal).clear(); // elimina esas cartas de la lista original
-                    return new Player(name, hand);
-                })
-                .toList();
+        this.cardDeck.addAll(cards);
+        this.pileCard = this.cardDeck.removeFirst(); // saca la primera carta de la lista y la asigna a currentCard
+        this.players = Arrays.stream(players).map(name -> {
+                                              List<Card> hand = new ArrayList<>(this.cardDeck.subList(0, numberToDeal));
+                                              this.cardDeck.subList(0, numberToDeal).clear(); // elimina esas cartas de la lista original
+                                              return new Player(name, hand); }).toList();
     }
 
-    public Card pit(){return currentCard;} // acá tendría que hacer el chequeo de si hay cartas. Preguntarle a emilio, por el tema ese de que al agregar eso no construimos funcionalidad y agregamos ifs
+    public Card getPileCard(){ return pileCard; } // acá tendría que hacer el chequeo de si hay cartas. Preguntarle a emilio, por el tema ese de que al agregar eso no construimos funcionalidad y agregamos ifs
 
+
+    // Falta Implementar
     public Game numberedCardAction() { return this; }
 
     public Game drawTwoCardAction() { return this; }

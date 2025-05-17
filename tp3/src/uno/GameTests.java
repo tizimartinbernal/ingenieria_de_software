@@ -25,18 +25,18 @@ public class GameTests {
     private Card Y3;
 
     @BeforeEach public void setUp() {
-        R1 = new Card("red", "1");
-        R2 = new Card("red", "2");
-        R3 = new Card("red", "3");
-        B1 = new Card("blue", "1");
-        B2 = new Card("blue", "2");
-        B3 = new Card("blue", "3");
-        G1 = new Card("green", "1");
-        G2 = new Card("green", "2");
-        G3 = new Card("green", "3");
-        Y1 = new Card("yellow", "1");
-        Y2 = new Card("yellow", "2");
-        Y3 = new Card("yellow", "3");
+        R1 = new NumberedCard("1", "red");
+        R2 = new NumberedCard("2", "red");
+        R3 = new NumberedCard("3", "red");
+        B1 = new NumberedCard("1", "blue");
+        B2 = new NumberedCard("2", "blue");
+        B3 = new NumberedCard("3", "blue");
+        G1 = new NumberedCard("1", "green");
+        G2 = new NumberedCard("2", "green");
+        G3 = new NumberedCard("3", "green");
+        Y1 = new NumberedCard("1", "yellow");
+        Y2 = new NumberedCard("2", "yellow");
+        Y3 = new NumberedCard("3", "yellow");
     }
 
 
@@ -44,14 +44,14 @@ public class GameTests {
         List <Card> cards = List.of(R1);
         int numberToDeal = 0;
         Game game = new Game(cards, numberToDeal, "Juan", "Paco", "Pedro");
-        assertEquals(new Card ("red", "1"), game.pit());
+        assertEquals(new NumberedCard("1", "red"), game.getPileCard());
     }
 
     @Test public void test01CreateGameAndDeal2CardsEach(){
         List <Card> cards = List.of(Y1, G3, G2, G1, B3, B2, B1, R3, R2, R1);
         int numberToDeal = 2;
         Game game = new Game(cards, numberToDeal, "Juan", "Paco", "Pedro");
-        assertEquals(new Card ("yellow", "1"), game.pit());
+        assertEquals(new NumberedCard("1", "yellow"), game.getPileCard());
     }
 }
 
