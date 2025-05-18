@@ -1,30 +1,54 @@
 package uno;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Arrays;
-import java.util.Stack;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class Game {
-    private final List <Card> cardDeck = new Stack<>();
-    private List <Player> players = new ArrayList<>();
+    private LinkedList<Card> cardDeck;
+    private LinkedList<Player> players;
     private Card pileCard;
 
-    public Game(List<Card> cards, int numberToDeal, String... players) {
-        this.cardDeck.addAll(cards);
-        this.pileCard = this.cardDeck.removeFirst(); // saca la primera carta de la lista
-        this.players = Arrays.stream(players).map(name -> {
-            List<Card> hand = new ArrayList<>(this.cardDeck.subList(0, numberToDeal));
-            this.cardDeck.subList(0, numberToDeal).clear(); // elimina esas cartas de la lista original
-            return new Player(name, hand); }).toList();
+    public Game(List<Card> cards, int numberToDeal, String... playerNames) {
+        // Inicializa la baraja como LinkedList para operaciones O(1) en extremos
+        this.cardDeck = new LinkedList<>(cards);
+        // Saca la carta inicial para el montón
+        this.pileCard = cardDeck.removeFirst();
+
+        // Crea la lista de jugadores como LinkedList
+        this.players = new LinkedList<>();
+        for (String name : playerNames) {
+            // Reparte numberToDeal cartas a cada jugador
+            List<Card> hand = new ArrayList<>();
+            for (int i = 0; i < numberToDeal; i++) {
+                hand.add(cardDeck.removeFirst());
+            }
+            players.add(new Player(name, hand));
+        }
     }
 
-    public Card getPileCard(){ return pileCard; } // acá tendría que hacer el chequeo de si hay cartas. Preguntarle a emilio, por el tema ese de que al agregar eso no construimos funcionalidad y agregamos ifs
+    public Card getPileCard() {
+        if (pileCard == null) {
+            throw new IllegalStateException("No hay carta en el montón");
+        }
+        return pileCard;
+    }
 
-    private void advanceTurn(){players.add(players.removeFirst());}
+    // Mueve el primer jugador al final de la lista para avanzar el turno
+    private void advanceTurn() {
+        players.addLast(players.removeFirst());
+    }
 
-    public void pickCard(Player player) {player.addCard(cardDeck.removeFirst());}
+    // El jugador toma una carta del mazo
+    public void pickCard(Player player) {
+        if (cardDeck.isEmpty()) {
+            throw new IllegalStateException("No quedan cartas en el mazo");
+        }
+        player.addCard(cardDeck.removeFirst());
+    }
 
+    // Acciones según tipo de carta
     public Game numberedCardAction() {
         advanceTurn();
         return this;
@@ -32,47 +56,55 @@ public class Game {
 
     public Game drawTwoCardAction() {
         advanceTurn();
+        // El siguiente jugador toma dos cartas
         pickCard(players.getFirst());
         pickCard(players.getFirst());
         return this;
     }
 
     public Game skipCardAction() {
+        // Salta al siguiente y avanza de nuevo
         advanceTurn();
         advanceTurn();
         return this;
     }
 
     public Game reverseCardAction() {
-        players.reversed();
+        // Invierte el orden de los jugadores
+        Collections.reverse(players);
         return this;
     }
 
     public Game wildCardAction() {
+        // Después de jugar comodín, avanza el turno
         advanceTurn();
         return this;
     }
 
-    public void playCard(Card card, Player playerName) {
-        Player currentPlayer = players.stream()
-                .limit(1) // me quedo sólo con el primero de la lista
-                .filter(p -> p.getName().equals(playerName))
-                .filter(p -> p.getHand().contains(card)) // compruebo que tenga la carta en la mano
-                .findFirst() // si no encuentro a nadie, lanzo excepción
-                .orElseThrow(() -> new IllegalStateException(
-                        "No es tu turno o no tienes esa carta: " + playerName + " / " + card // Podemos cambiarlo para que le sume una carta del mazo al jugador.
-                ));
+    // Método principal para jugar una carta
+    public Game playCard(Card card, String playerName) {
+        Player current = players.getFirst();
+        // Verifica turno y posesión de la carta
+        if (!current.getName().equals(playerName) || !current.getHand().contains(card)) {
+            throw new IllegalStateException(
+                    "No es tu turno o no tienes esa carta: " + playerName + " / " + card
+            );
+        }
 
         if (card.canStackOn(pileCard)) {
+            // La carta es válida: actualiza montón y dispara acción
             pileCard = card;
-            playerName.removeCard(card);
-            card.cardAction(this);
-            // advanceTurn();
+            current.removeCard(card);
+            return card.cardAction(this);
         } else {
+            // Carta inválida: pierde el turno
             advanceTurn();
+            return this;
         }
     }
 }
+
+
 
 // Cosas que faltan:
 // implementar que si tiene una carta y no canta uno: se come dos

@@ -5,56 +5,125 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTests {
-    private Card R1;
-    private Card R2;
-    private Card R3;
-    private Card B1;
-    private Card B2;
-    private Card B3;
-    private Card G1;
-    private Card G2;
-    private Card G3;
-    private Card Y1;
-    private Card Y2;
-    private Card Y3;
+    private Card redZero, redOne, redTwo, redThree, redFour, redFive, redSix, redSeven, redEight, redNine;
+    private Card blueZero, blueOne, blueTwo, blueThree, blueFour, blueFive, blueSix, blueSeven, blueEight, blueNine;
+    private Card greenZero, greenOne, greenTwo, greenThree, greenFour, greenFive, greenSix, greenSeven, greenEight, greenNine;
+    private Card yellowZero, yellowOne, yellowTwo, yellowThree, yellowFour, yellowFive, yellowSix, yellowSeven, yellowEight, yellowNine;
+    private Card redSkip, redReverse, redDrawTwo;
+    private Card blueSkip, blueReverse, blueDrawTwo;
+    private Card greenSkip, greenReverse, greenDrawTwo;
+    private Card yellowSkip, yellowReverse, yellowDrawTwo;
+    private Card wildCard;
 
     @BeforeEach public void setUp() {
-        R1 = new NumberedCard("1", "red");
-        R2 = new NumberedCard("2", "red");
-        R3 = new NumberedCard("3", "red");
-        B1 = new NumberedCard("1", "blue");
-        B2 = new NumberedCard("2", "blue");
-        B3 = new NumberedCard("3", "blue");
-        G1 = new NumberedCard("1", "green");
-        G2 = new NumberedCard("2", "green");
-        G3 = new NumberedCard("3", "green");
-        Y1 = new NumberedCard("1", "yellow");
-        Y2 = new NumberedCard("2", "yellow");
-        Y3 = new NumberedCard("3", "yellow");
+        redZero = new NumberedCard("0", "red");
+        redOne = new NumberedCard("1", "red");
+        redTwo = new NumberedCard("2", "red");
+        redThree = new NumberedCard("3", "red");
+        redFour = new NumberedCard("4", "red");
+        redFive = new NumberedCard("5", "red");
+        redSix = new NumberedCard("6", "red");
+        redSeven = new NumberedCard("7", "red");
+        redEight = new NumberedCard("8", "red");
+        redNine = new NumberedCard("9", "red");
+        blueZero = new NumberedCard("0", "blue");
+        blueOne = new NumberedCard("1", "blue");
+        blueTwo = new NumberedCard("2", "blue");
+        blueThree = new NumberedCard("3", "blue");
+        blueFour = new NumberedCard("4", "blue");
+        blueFive = new NumberedCard("5", "blue");
+        blueSix = new NumberedCard("6", "blue");
+        blueSeven = new NumberedCard("7", "blue");
+        blueEight = new NumberedCard("8", "blue");
+        blueNine = new NumberedCard("9", "blue");
+        greenZero = new NumberedCard("0", "green");
+        greenOne = new NumberedCard("1", "green");
+        greenTwo = new NumberedCard("2", "green");
+        greenThree = new NumberedCard("3", "green");
+        greenFour = new NumberedCard("4", "green");
+        greenFive = new NumberedCard("5", "green");
+        greenSix = new NumberedCard("6", "green");
+        greenSeven = new NumberedCard("7", "green");
+        greenEight = new NumberedCard("8", "green");
+        greenNine = new NumberedCard("9", "green");
+        yellowZero = new NumberedCard("0", "yellow");
+        yellowOne = new NumberedCard("1", "yellow");
+        yellowTwo = new NumberedCard("2", "yellow");
+        yellowThree = new NumberedCard("3", "yellow");
+        yellowFour = new NumberedCard("4", "yellow");
+        yellowFive = new NumberedCard("5", "yellow");
+        yellowSix = new NumberedCard("6", "yellow");
+        yellowSeven = new NumberedCard("7", "yellow");
+        yellowEight = new NumberedCard("8", "yellow");
+        yellowNine = new NumberedCard("9", "yellow");
+        redSkip = new SkipCard("red");
+        redReverse = new ReverseCard("red");
+        redDrawTwo = new DrawTwoCard("red");
+        blueSkip = new SkipCard("blue");
+        blueReverse = new ReverseCard("blue");
+        blueDrawTwo = new DrawTwoCard("blue");
+        greenSkip = new SkipCard("green");
+        greenReverse = new ReverseCard("green");
+        greenDrawTwo = new DrawTwoCard("green");
+        yellowSkip = new SkipCard("yellow");
+        yellowReverse = new ReverseCard("yellow");
+        yellowDrawTwo = new DrawTwoCard("yellow");
+        wildCard = new WildCard();
     }
 
 
     @Test public void test00CreateOneCardGame() {
-        List <Card> cards = List.of(R1);
+        List <Card> cards = List.of(redOne);
         int numberToDeal = 0;
-        Game game = new Game(cards, numberToDeal, "Juan", "Paco", "Pedro");
-        assertEquals(new NumberedCard("1", "red"), game.getPileCard());
+        assertEquals(new NumberedCard("1", "red"), new Game(cards, numberToDeal, "Juan", "Paco", "Pedro")
+                                                                         .getPileCard());
     }
 
     @Test public void test01CreateGameAndDeal2CardsEach(){
-        List <Card> cards = List.of(Y1, G3, G2, G1, B3, B2, B1, R3, R2, R1);
+        List <Card> cards = List.of(yellowOne, greenThree, greenTwo, greenOne, blueThree, blueTwo, blueOne, redThree, redTwo, redOne);
         int numberToDeal = 2;
-        Game game = new Game(cards, numberToDeal, "Juan", "Paco", "Pedro");
-        assertEquals(new NumberedCard("1", "yellow"), game.getPileCard());
+        assertEquals(new NumberedCard("1", "yellow"), new Game(cards, numberToDeal, "Juan", "Paco", "Pedro")
+                                                                            .getPileCard());
     }
 
+    @Test public void test02PlayACardComparableByColor() {
+        List<Card> cards = List.of(yellowOne, yellowTwo, greenThree, greenTwo, blueThree, blueTwo, blueOne, redThree, redTwo, redOne);
+        int numberToDeal = 2;
+        assertEquals(new NumberedCard("2", "yellow"), new Game(cards, numberToDeal, "Juan", "Paco") // Si le paso un tercer jugador se rompe
+                                                                            .playCard(yellowTwo, "Juan")
+                                                                            .getPileCard());
+    }
+
+    @Test public void test03PlayACardComparableByNumber() {
+        List<Card> cards = List.of(yellowOne, yellowTwo, greenOne, greenTwo, blueThree, blueTwo, blueOne, redThree, redTwo, redOne);
+        int numberToDeal = 2;
+        assertEquals(new NumberedCard("1", "green"), new Game(cards, numberToDeal, "Juan", "Paco")
+                                                                            .playCard(greenOne, "Juan")
+                                                                            .getPileCard());
+    }
+
+    @Test public void test04PlayACardComparableBySymbol() { //  LA PRIMER CARTA DEL POZO DEBE EJECUTAR SU ACCIÓN (o capaz no, hay que consultar)
+        List<Card> cards = List.of(redDrawTwo, blueDrawTwo, greenDrawTwo, yellowDrawTwo, greenOne, greenTwo, blueThree, blueTwo, blueOne, redThree, redTwo, redOne);
+        int numberToDeal = 2;
+        assertEquals(new DrawTwoCard("blue"), new Game(cards, numberToDeal, "Juan", "Paco")
+                .playCard(blueDrawTwo, "Juan")
+                .getPileCard());
+    }
+
+    @Test public void test05PlayACardComparableByColorAndNumber() {
+        List<Card> cards = List.of(yellowOne, yellowOne, greenOne, greenTwo, blueThree, blueTwo, blueOne, redThree, redTwo, redOne);
+        int numberToDeal = 2;
+        assertEquals(new NumberedCard("1", "yellow"), new Game(cards, numberToDeal, "Juan", "Paco")
+                                                                            .playCard(yellowOne, "Juan")
+                                                                            .getPileCard());
+    }
+
+
 }
+
 
 /*
 Tests:
