@@ -14,7 +14,7 @@ public class Player {
 
     public String getName() {return name;} //No se si es necesario
 
-    public List<Card> getCards() {return cards;} //No se si es necesario
+    public List<Card> getHand() {return cards;} //No se si es necesario
 
     public void addCard(Card card) {cards.add(card);}
 
