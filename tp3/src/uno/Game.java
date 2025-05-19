@@ -97,9 +97,9 @@ public class Game {
             current.removeCard(card);
             return card.cardAction(this);
         } else {
-            // Carta inválida: pierde el turno
-            advanceTurn();
-            return this;
+            throw new IllegalStateException(
+                    "No puedes jugar esa carta: " + card + " / " + pileCard
+            );
         }
     }
 }

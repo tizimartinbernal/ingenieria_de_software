@@ -5,8 +5,8 @@ public abstract class ColorAssignment {
     public abstract boolean canStackOn(Card card);
 }
 
-class NullColorAssignment extends ColorAssignment {
-    public boolean matches(String color) { return false; }
+class NullColorAssignment extends ColorAssignment { //Revisar por las dudas
+    public boolean matches(String color) { return true; }
 
     public boolean canStackOn(Card card) { return true; }
 
