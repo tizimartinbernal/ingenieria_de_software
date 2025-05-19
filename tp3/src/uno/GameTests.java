@@ -425,6 +425,31 @@ public class GameTests {
                                                                             .playCard(blueReverse, "Mateo"));
     }
 
+    @Test public void test45AllPlayersPlayOneCard() {
+        List<Card> cards = List.of(redOne, redTwo, redThree, redFour, redFive, redSix, greenFour, redEight, redNine);
+        int numberToDeal = 2;
+        assertEquals(new NumberedCard("4", "green"), new Game(cards, numberToDeal, "Mateo", "Tiziano", "Matias")
+                                                                            .playCard(redTwo, "Mateo")
+                                                                            .playCard(redFour, "Tiziano")
+                                                                            .playCard(greenFour, "Matias")
+                                                                            .getPileCard());
+    }
+
+    @Test public void test46APlayerTrysToPlayOutOfTurn() {
+        List<Card> cards = List.of(redOne, redTwo, redThree, redFour, redFive, redSix, greenFour, redEight, redNine);
+        int numberToDeal = 2;
+        assertThrows(IllegalStateException.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano", "Matias")
+                                                                            .playCard(redTwo, "Mateo")
+                                                                            .playCard(redSix, "Matias"));
+    }
+
+    @Test public void test47APlayerTrysToPlayACardNotInHand() {
+        List<Card> cards = List.of(redOne, redTwo, redThree, redFour, redFive, redSix, greenFour, redEight, redNine);
+        int numberToDeal = 2;
+        assertThrows(IllegalStateException.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano", "Matias")
+                                                                            .playCard(redNine, "Mateo"));
+    }
+
 }
 
 

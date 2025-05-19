@@ -11,15 +11,11 @@ public class Game {
     private Card pileCard;
 
     public Game(List<Card> cards, int numberToDeal, String... playerNames) {
-        // Inicializa la baraja como LinkedList para operaciones O(1) en extremos
-        this.cardDeck = new LinkedList<>(cards);
-        // Saca la carta inicial para el montón
+        this.cardDeck = new LinkedList<>(cards); // ¿Chequemos que cards no esta vació, que numberToDeal sea >= 0 y que playerNames no esté vacío?
         this.pileCard = cardDeck.removeFirst();
-
-        // Crea la lista de jugadores como LinkedList
         this.players = new LinkedList<>();
+
         for (String name : playerNames) {
-            // Reparte numberToDeal cartas a cada jugador
             List<Card> hand = new ArrayList<>();
             for (int i = 0; i < numberToDeal; i++) {
                 hand.add(cardDeck.removeFirst());
@@ -29,18 +25,16 @@ public class Game {
     }
 
     public Card getPileCard() {
-        if (pileCard == null) {
+        if (pileCard == null) { // Si se chequea a la hora de crear el objeto, creo que no hace falta.
             throw new IllegalStateException("No hay carta en el montón");
         }
         return pileCard;
     }
 
-    // Mueve el primer jugador al final de la lista para avanzar el turno
     private void advanceTurn() {
         players.addLast(players.removeFirst());
     }
 
-    // El jugador toma una carta del mazo
     public void pickCard(Player player) {
         if (cardDeck.isEmpty()) {
             throw new IllegalStateException("No quedan cartas en el mazo");
@@ -48,7 +42,22 @@ public class Game {
         player.addCard(cardDeck.removeFirst());
     }
 
-    // Acciones según tipo de carta
+    public Game playCard(Card card, String playerName) {
+        Player current = players.getFirst();
+        if (!current.getName().equals(playerName) || !current.getHand().contains(card)) {
+            throw new IllegalStateException("No es tu turno o no tienes esa carta: " + playerName + " / " + card);
+        }
+
+        if (card.canStackOn(pileCard)) {
+            // La carta es válida: actualiza montón y dispara acción
+            pileCard = card;
+            current.removeCard(card);
+            return card.cardAction(this);
+        } else {
+            throw new IllegalStateException( "No puedes jugar esa carta: " + card + " / " + pileCard);
+        }
+    }
+
     public Game numberedCardAction() {
         advanceTurn();
         return this;
@@ -81,27 +90,7 @@ public class Game {
         return this;
     }
 
-    // Método principal para jugar una carta
-    public Game playCard(Card card, String playerName) {
-        Player current = players.getFirst();
-        // Verifica turno y posesión de la carta
-        if (!current.getName().equals(playerName) || !current.getHand().contains(card)) {
-            throw new IllegalStateException(
-                    "No es tu turno o no tienes esa carta: " + playerName + " / " + card
-            );
-        }
 
-        if (card.canStackOn(pileCard)) {
-            // La carta es válida: actualiza montón y dispara acción
-            pileCard = card;
-            current.removeCard(card);
-            return card.cardAction(this);
-        } else {
-            throw new IllegalStateException(
-                    "No puedes jugar esa carta: " + card + " / " + pileCard
-            );
-        }
-    }
 }
 
 
