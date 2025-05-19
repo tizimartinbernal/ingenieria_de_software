@@ -6,15 +6,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 
 public class GameTests {
-    private Card redZero, redOne, redTwo, redThree, redFour, redFive, redSix, redSeven, redEight, redNine;
-    private Card blueZero, blueOne, blueTwo, blueThree, blueFour, blueFive, blueSix, blueSeven, blueEight, blueNine;
-    private Card greenZero, greenOne, greenTwo, greenThree, greenFour, greenFive, greenSix, greenSeven, greenEight, greenNine;
-    private Card yellowZero, yellowOne, yellowTwo, yellowThree, yellowFour, yellowFive, yellowSix, yellowSeven, yellowEight, yellowNine;
-    private Card redSkip, redReverse, redDrawTwo;
-    private Card blueSkip, blueReverse, blueDrawTwo;
-    private Card greenSkip, greenReverse, greenDrawTwo;
-    private Card yellowSkip, yellowReverse, yellowDrawTwo;
-    private Card wildCard;
+    private NumberedCard redZero, redOne, redTwo, redThree, redFour, redFive, redSix, redSeven, redEight, redNine;
+    private NumberedCard blueZero, blueOne, blueTwo, blueThree, blueFour, blueFive, blueSix, blueSeven, blueEight, blueNine;
+    private NumberedCard greenZero, greenOne, greenTwo, greenThree, greenFour, greenFive, greenSix, greenSeven, greenEight, greenNine;
+    private NumberedCard yellowZero, yellowOne, yellowTwo, yellowThree, yellowFour, yellowFive, yellowSix, yellowSeven, yellowEight, yellowNine;
+    private SkipCard redSkip, blueSkip, greenSkip, yellowSkip;
+    private ReverseCard redReverse, blueReverse, greenReverse, yellowReverse;
+    private DrawTwoCard redDrawTwo, blueDrawTwo, greenDrawTwo, yellowDrawTwo;
+    private WildCard wildCard;
 
     @BeforeEach public void setUp() {
         redZero = new NumberedCard("0", "red");
