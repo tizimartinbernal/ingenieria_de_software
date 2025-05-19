@@ -140,8 +140,9 @@ class WildCard extends Card {
       this.assignedColor = new NullColorAssignment();
    }
 
-   public void assignColor(String color) {
+   public WildCard assignColor(String color) { // Deberia retornar WildCard capaz ?
       this.assignedColor = new RealColorAssignment(color);
+      return this;
    }
 
    public String getSymbol() { return this.getClass().getSimpleName(); }

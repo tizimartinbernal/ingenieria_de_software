@@ -450,6 +450,41 @@ public class GameTests {
                                                                             .playCard(redNine, "Mateo"));
     }
 
+    @Test public void test48ShowDrawTwoCardAction() { // Segundo jugador juega una carta que el principio no tiene en su mazo (en particular la segunda del mazo)
+        List<Card> cards = List.of(redOne, redDrawTwo, redThree, redFour, redFive, greenFive, redSix, redEight, redNine);
+        int numberToDeal = 2;
+        assertEquals(new NumberedCard("6", "red"), new Game(cards, numberToDeal, "Mateo", "Tiziano")
+                                                                            .playCard(redDrawTwo, "Mateo")
+                                                                            .playCard(redSix, "Tiziano")
+                                                                            .getPileCard());
+    }
+
+    @Test public void test49ShowSkipCardAction() {
+        List<Card> cards = List.of(redOne, redSkip, redThree, redFour, redFive, greenFive, redSix, redEight, redNine);
+        int numberToDeal = 2;
+        assertEquals(new NumberedCard("6", "red"), new Game(cards, numberToDeal, "Mateo", "Tiziano", "Matias")
+                                                                            .playCard(redSkip, "Mateo")
+                                                                            .playCard(redSix, "Matias")
+                                                                            .getPileCard());
+    }
+
+    @Test public void test50ShowReverseCardAction() {
+        List<Card> cards = List.of(redOne, redReverse, redThree, redFour, redFive, greenFive, redSix, redEight, redNine, redDrawTwo, redSkip);
+        int numberToDeal = 2;
+        assertEquals(new NumberedCard("8", "red"), new Game(cards, numberToDeal, "Mateo", "Tiziano", "Matias", "Julio")
+                                                                            .playCard(redReverse, "Mateo")
+                                                                            .playCard(redEight, "Julio")
+                                                                            .getPileCard());
+    }
+
+    @Test public void test51ShowWildCardAction() {
+        List<Card> cards = List.of(redOne, wildCard, redThree, redFour, greenFive, greenNine, redSix, redEight, redNine);
+        int numberToDeal = 2;
+        assertThrows(IllegalStateException.class, () ->  new Game(cards, numberToDeal, "Mateo", "Tiziano", "Matias")
+                                                                            .playCard(wildCard.assignColor("red"), "Mateo")
+                                                                            .playCard(greenFive, "Tiziano")
+                                                                            .getPileCard());
+    }
 }
 
 
