@@ -486,6 +486,20 @@ public class GameTests {
     }
 }
 
+/*
+ Tets a realizar:
+
+ - Piquear carta y que esta no se puede tirar
+
+ - Piquear carta y que esta se tire (ver pozo resultante)
+
+ - Jugar un poco y cantar uno
+
+ - Penalización al no cantar uno
+
+ - Fin de la partida (no se puede hacer ningun movimiento mas
+*/
+
 
 /*
 Tests:

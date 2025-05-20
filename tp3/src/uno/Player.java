@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
-    private String name;
+    private final String name;
     private List<Card> cards = new ArrayList<>();
 
     public Player(String name, List<Card> cards) {
@@ -12,13 +12,11 @@ public class Player {
         this.cards.addAll(cards);
     }
 
-    public String getName() {return name;} //No se si es necesario
+    public String getName() { return name; }
 
-    public List<Card> getHand() {return cards;} //No se si es necesario
+    public List<Card> getHand() { return cards; }
 
-    public void addCard(Card card) {cards.add(card);}
+    public void addCard(Card card) { cards.add(card); }
 
-    public void removeCard(Card card) {
-        cards.remove(card);
-    }
+    public void removeCard(Card card) { cards.remove(card); }
 }
