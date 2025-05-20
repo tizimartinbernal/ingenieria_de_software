@@ -336,91 +336,91 @@ public class GameTests {
     @Test public void test32StackANumberedCardOnANumberedCardWithDifferentColorAndNumberShouldFail() {
         List<Card> cards = List.of(yellowOne, yellowTwo, greenTwo, greenOne, blueThree, blueTwo, blueOne);
         int numberToDeal = 2;
-        assertThrows(IllegalStateException.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
+        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
                                                                             .playCard(greenTwo, "Mateo"));
     }
 
     @Test public void test33StackANumberedCardOnADrawTwoCardWithDifferentColorShouldFail() {
         List<Card> cards = List.of(blueDrawTwo, yellowOne, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
         int numberToDeal = 2;
-        assertThrows(IllegalStateException.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
+        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
                                                                             .playCard(yellowOne, "Mateo"));
     }
 
     @Test public void test34StackANumberedCardOnASkipCardWithDifferentColorShouldFail() {
         List<Card> cards = List.of(blueSkip, yellowOne, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
         int numberToDeal = 2;
-        assertThrows(IllegalStateException.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
+        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
                                                                             .playCard(yellowOne, "Mateo"));
     }
 
     @Test public void test35StackANumberedCardOnAReverseCardWithDifferentColorShouldFail() {
         List<Card> cards = List.of(blueReverse, yellowOne, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
         int numberToDeal = 2;
-        assertThrows(IllegalStateException.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
+        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
                                                                             .playCard(yellowOne, "Mateo"));
     }
 
     @Test public void test36StackADrawTwoOnANumberedCardWithDifferentColorShouldFail() {
         List<Card> cards = List.of(yellowOne, blueDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
         int numberToDeal = 2;
-        assertThrows(IllegalStateException.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
+        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
                                                                             .playCard(blueDrawTwo, "Mateo"));
     }
 
     @Test public void test37StackADrawTwoOnASkipCardWithDifferentColorShouldFail() {
         List<Card> cards = List.of(redSkip, blueDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
         int numberToDeal = 2;
-        assertThrows(IllegalStateException.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
+        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
                                                                             .playCard(blueDrawTwo, "Mateo"));
     }
 
     @Test public void test38StackADrawTwoOnAReverseCardWithDifferentColorShouldFail() {
         List<Card> cards = List.of(redReverse, blueDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
         int numberToDeal = 2;
-        assertThrows(IllegalStateException.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
+        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
                                                                             .playCard(blueDrawTwo, "Mateo"));
     }
 
     @Test public void test39StackASkipOnANumberedCardWithDifferentColorShouldFail() {
         List<Card> cards = List.of(yellowOne, blueSkip, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
         int numberToDeal = 2;
-        assertThrows(IllegalStateException.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
+        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
                                                                             .playCard(blueSkip, "Mateo"));
     }
 
     @Test public void test40StackASkipOnADrawTwoCardWithDifferentColorShouldFail() {
         List<Card> cards = List.of(redDrawTwo, blueSkip, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
         int numberToDeal = 2;
-        assertThrows(IllegalStateException.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
+        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
                                                                             .playCard(blueSkip, "Mateo"));
     }
 
     @Test public void test41StackASkipOnAReverseCardWithDifferentColorShouldFail() {
         List<Card> cards = List.of(yellowReverse, blueSkip, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
         int numberToDeal = 2;
-        assertThrows(IllegalStateException.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
+        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
                                                                             .playCard(blueSkip, "Mateo"));
     }
 
     @Test public void test42StackAReverseOnANumberedCardWithDifferentColorShouldFail() {
         List<Card> cards = List.of(yellowOne, blueReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
         int numberToDeal = 2;
-        assertThrows(IllegalStateException.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
+        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
                                                                             .playCard(blueReverse, "Mateo"));
     }
 
     @Test public void test43StackAReverseOnADrawTwoCardWithDifferentColorShouldFail() {
         List<Card> cards = List.of(redDrawTwo, blueReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
         int numberToDeal = 2;
-        assertThrows(IllegalStateException.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
+        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
                                                                             .playCard(blueReverse, "Mateo"));
     }
 
     @Test public void test44StackAReverseOnASkipCardWithDifferentColorShouldFail() {
         List<Card> cards = List.of(redSkip, blueReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
         int numberToDeal = 2;
-        assertThrows(IllegalStateException.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
+        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
                                                                             .playCard(blueReverse, "Mateo"));
     }
 
@@ -437,7 +437,7 @@ public class GameTests {
     @Test public void test46APlayerTrysToPlayOutOfTurn() {
         List<Card> cards = List.of(redOne, redTwo, redThree, redFour, redFive, redSix, greenFour, redEight, redNine);
         int numberToDeal = 2;
-        assertThrows(IllegalStateException.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano", "Matias")
+        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano", "Matias")
                                                                             .playCard(redTwo, "Mateo")
                                                                             .playCard(redSix, "Matias"));
     }
@@ -445,7 +445,7 @@ public class GameTests {
     @Test public void test47APlayerTrysToPlayACardNotInHand() {
         List<Card> cards = List.of(redOne, redTwo, redThree, redFour, redFive, redSix, greenFour, redEight, redNine);
         int numberToDeal = 2;
-        assertThrows(IllegalStateException.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano", "Matias")
+        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano", "Matias")
                                                                             .playCard(redNine, "Mateo"));
     }
 
@@ -479,10 +479,36 @@ public class GameTests {
     @Test public void test51ShowWildCardAction() {
         List<Card> cards = List.of(redOne, wildCard, redThree, redFour, greenFive, greenNine, redSix, redEight, redNine);
         int numberToDeal = 2;
-        assertThrows(IllegalStateException.class, () ->  new Game(cards, numberToDeal, "Mateo", "Tiziano", "Matias")
+        assertThrows(Error.class, () ->  new Game(cards, numberToDeal, "Mateo", "Tiziano", "Matias")
                                                                             .playCard(wildCard.assignColor("red"), "Mateo")
                                                                             .playCard(greenFive, "Tiziano")
                                                                             .getPileCard());
+    }
+
+    @Test public void test52PickUpACardThatCanBePlayed() {
+        List<Card> cards = List.of(redOne, redTwo, redThree, blueFour, greenFive, redSix, greenSix, redEight, redNine);
+        int numberToDeal = 2;
+        assertEquals(new NumberedCard("6", "red"), new Game(cards, numberToDeal, "Mateo", "Tiziano")
+                                                                            .playCard(redTwo, "Mateo")
+                                                                            .pickCard("Tiziano")
+                                                                            .getPileCard());
+    }
+
+    @Test public void test53PickUpACardThatCannotBePlayed() {
+        List<Card> cards = List.of(redOne, redTwo, redThree, blueFour, greenFive, greenSix, redEight, redNine);
+        int numberToDeal = 2;
+        assertEquals(new NumberedCard("2", "red"), new Game(cards, numberToDeal, "Mateo", "Tiziano")
+                                                                            .playCard(redTwo, "Mateo")
+                                                                            .pickCard("Tiziano")
+                                                                            .getPileCard());
+    }
+
+    @Test public void test54PickUpACardWhenIsNotYourTurn() {
+        List<Card> cards = List.of(redOne, redTwo, redThree, blueFour, greenFive, greenSix, redEight, redNine);
+        int numberToDeal = 2;
+        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
+                                                                            .playCard(redTwo, "Mateo")
+                                                                            .pickCard("Mateo"));
     }
 }
 

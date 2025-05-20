@@ -10,7 +10,7 @@ public class Game {
     private LinkedList<Player> players;
     private Card pileCard;
 
-    public Game(List<Card> cards, int numberToDeal, String... playerNames) {
+    public Game(List<Card> cards, int numberToDeal, String... playerNames) { // Que no se rompa si no hay cartas ara un jugador o para el pozo
         this.cardDeck = new LinkedList<>(cards); // ¿Chequemos que cards no esta vació, que numberToDeal sea >= 0 y que playerNames no esté vacío?
         this.pileCard = cardDeck.removeFirst();
         this.players = new LinkedList<>();
@@ -24,38 +24,50 @@ public class Game {
         }
     }
 
-    public Card getPileCard() {
-        if (pileCard == null) { // Si se chequea a la hora de crear el objeto, creo que no hace falta.
-            throw new IllegalStateException("No hay carta en el montón");
-        }
-        return pileCard;
-    }
+    public Card getPileCard() { return pileCard; }
 
-    private void advanceTurn() {
-        players.addLast(players.removeFirst());
-    }
-
-    public void pickCard(Player player) {
-        if (cardDeck.isEmpty()) {
-            throw new IllegalStateException("No quedan cartas en el mazo");
-        }
-        player.addCard(cardDeck.removeFirst());
-    }
+    // ¿No debería haber getters de cardDeck o players?
 
     public Game playCard(Card card, String playerName) {
-        Player current = players.getFirst();
-        if (!current.getName().equals(playerName) || !current.getHand().contains(card)) {
-            throw new IllegalStateException("No es tu turno o no tienes esa carta: " + playerName + " / " + card);
+        Player currentPlayer = players.getFirst();
+        if (!currentPlayer.getName().equals(playerName) || !currentPlayer.getHand().contains(card)) {
+            throw new Error("No es tu turno o no tienes esa carta: " + playerName + " / " + card);
         }
 
         if (card.canStackOn(pileCard)) {
             // La carta es válida: actualiza montón y dispara acción
             pileCard = card;
-            current.removeCard(card);
+            currentPlayer.removeCard(card);
             return card.cardAction(this);
         } else {
-            throw new IllegalStateException( "No puedes jugar esa carta: " + card + " / " + pileCard);
+            throw new Error( "No puedes jugar esa carta: " + card + " / " + pileCard);
         }
+    }
+
+    public Game pickCard(String playerName) {
+        Player current = players.getFirst();
+        if (!current.getName().equals(playerName)) { throw new Error("No es tu turno " + playerName); }
+        Card raisedCard = cardDeck.removeFirst();
+        if (raisedCard.canStackOn(pileCard)) {
+            pileCard = raisedCard;
+            return raisedCard.cardAction(this);
+        } else {
+            current.addCard(raisedCard);
+            advanceTurn();
+            return this;
+        }
+    }
+
+
+    private void advanceTurn() {
+        players.addLast(players.removeFirst());
+    }
+
+    private void pickCardFromCardDeck(Player player) {
+        if (cardDeck.isEmpty()) {
+            throw new Error("No quedan cartas en el mazo");
+        }
+        player.addCard(cardDeck.removeFirst());
     }
 
     public Game numberedCardAction() {
@@ -66,8 +78,8 @@ public class Game {
     public Game drawTwoCardAction() {
         advanceTurn();
         // El siguiente jugador toma dos cartas
-        pickCard(players.getFirst());
-        pickCard(players.getFirst());
+        pickCardFromCardDeck(players.getFirst());
+        pickCardFromCardDeck(players.getFirst());
         return this;
     }
 
