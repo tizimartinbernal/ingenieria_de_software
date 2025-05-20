@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Game {
+    private boolean gameIsClosed = false; // ¿Tendría que chequear que el juego al craerse no esta en un estado "cerrado"?
     private LinkedList<Card> cardDeck;
     private LinkedList<Player> players;
     private Card pileCard;
@@ -24,27 +25,51 @@ public class Game {
         }
     }
 
-    public Card getPileCard() { return pileCard; }
+    public Card getPileCard() {
+        if (gameIsClosed) { throw new Error("El juego ya terminó"); }
+        return pileCard;
+    }
 
     // ¿No debería haber getters de cardDeck o players?
 
     public Game playCard(Card card, String playerName) {
+        if (gameIsClosed) { throw new Error("El juego ya terminó"); }
         Player currentPlayer = players.getFirst();
         if (!currentPlayer.getName().equals(playerName) || !currentPlayer.getHand().contains(card)) {
             throw new Error("No es tu turno o no tienes esa carta: " + playerName + " / " + card);
         }
 
         if (card.canStackOn(pileCard)) {
-            // La carta es válida: actualiza montón y dispara acción
             pileCard = card;
             currentPlayer.removeCard(card);
-            return card.cardAction(this);
+            if (card.getUnoState()) {
+                if (currentPlayer.getHand().size() == 1) {
+                    return card.cardAction(this);
+                } else {
+                    pickCardFromCardDeck(currentPlayer); // En este caso, ¿se come 1 o 2 cartas?
+                    pickCardFromCardDeck(currentPlayer);
+                    return card.cardAction(this);
+                }
+            }
+            if (currentPlayer.getHand().size() == 1) {
+                pickCardFromCardDeck(currentPlayer); // En este caso, ¿se come una
+                pickCardFromCardDeck(currentPlayer);
+                return card.cardAction(this);
+            }
+            if (currentPlayer.getHand().size() == 0) {
+                gameIsClosed = true;
+                return card.cardAction(this);
+            } else {
+                return card.cardAction(this);
+            }
+
         } else {
             throw new Error( "No puedes jugar esa carta: " + card + " / " + pileCard);
         }
     }
 
-    public Game pickCard(String playerName) {
+    public Game pickCard(String playerName) { // Pude faltar implementar
+        if (gameIsClosed) { throw new Error("El juego ya terminó"); }
         Player current = players.getFirst();
         if (!current.getName().equals(playerName)) { throw new Error("No es tu turno " + playerName); }
         Card raisedCard = cardDeck.removeFirst();
@@ -63,7 +88,7 @@ public class Game {
         players.addLast(players.removeFirst());
     }
 
-    private void pickCardFromCardDeck(Player player) {
+    private void pickCardFromCardDeck(Player player) { // Creo que no hace falta
         if (cardDeck.isEmpty()) {
             throw new Error("No quedan cartas en el mazo");
         }
@@ -77,32 +102,28 @@ public class Game {
 
     public Game drawTwoCardAction() {
         advanceTurn();
-        // El siguiente jugador toma dos cartas
         pickCardFromCardDeck(players.getFirst());
         pickCardFromCardDeck(players.getFirst());
         return this;
     }
 
     public Game skipCardAction() {
-        // Salta al siguiente y avanza de nuevo
         advanceTurn();
         advanceTurn();
         return this;
     }
 
     public Game reverseCardAction() {
-        // Invierte el orden de los jugadores
         Collections.reverse(players);
         return this;
     }
 
     public Game wildCardAction() {
-        // Después de jugar comodín, avanza el turno
         advanceTurn();
         return this;
     }
 
-
+    // ¿Las acciones deben ser públicas? ¿Hay que chequear if (gameIsClosed) { throw new Error("El juego ya terminó"); }?
 }
 
 
