@@ -514,16 +514,29 @@ public class GameTests {
     @Test public void test56MakeAValidUnoCall() {
         List<Card> cards = List.of(redOne, redTwo, redThree, redSkip, greenFive, greenSix, redEight, redNine, blueSkip);
         int numberToDeal = 3;
-        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
+        assertEquals(new SkipCard("red"), new Game(cards, numberToDeal, "Mateo", "Tiziano")
                                                                             .playCard(redTwo, "Mateo")
                                                                             .playCard(redEight, "Tiziano")
                                                                             .playCard(redThree.uno(), "Mateo")
                                                                             .pickCard("Tiziano")
                                                                             .playCard(redSkip, "Mateo")
                                                                             .getPileCard());
+
     }
 
-    @Test public void test57MakeAnInvalidUnoCall() {
+    @Test public void test57MakeAValidUnoCallWithAWildCard() {
+        List<Card> cards = List.of(redOne, redTwo, greenZero, wildCard, greenFive, greenSix, redEight, redNine, blueSkip);
+        int numberToDeal = 3;
+        assertEquals(new NumberedCard("0", "green"), new Game(cards, numberToDeal, "Mateo", "Tiziano")
+                                                                            .playCard(redTwo, "Mateo")
+                                                                            .playCard(redEight, "Tiziano")
+                                                                            .playCard(wildCard.assignColor("green").uno(), "Mateo")
+                                                                            .pickCard("Tiziano")
+                                                                            .playCard(greenZero, "Mateo")
+                                                                            .getPileCard());
+    }
+
+    @Test public void test58MakeAnInvalidUnoCall() {
         List<Card> cards = List.of(redOne, redTwo, redThree, redSkip, greenFive, greenSix, redEight, redNine, redZero, yellowDrawTwo);
         int numberToDeal = 3;
         assertEquals(new NumberedCard("0", "red"), new Game(cards, numberToDeal, "Mateo", "Tiziano")
@@ -534,7 +547,7 @@ public class GameTests {
                                                                             .getPileCard());
     }
 
-    @Test public void test58ForgetToCallUno() {
+    @Test public void test59ForgetToCallUno() {
         List<Card> cards = List.of(redOne, redTwo, redThree, redZero, greenFive, redEight, blueSkip, redNine);
         int numberToDeal = 2;
         assertEquals(new NumberedCard("8", "red"), new Game(cards, numberToDeal, "Mateo", "Tiziano")
@@ -544,7 +557,7 @@ public class GameTests {
                                                                             .getPileCard());
     }
 
-    @Test public void test59CannotPlayACardWhenGameIsOver() {
+    @Test public void test60CannotPlayACardWhenGameIsOver() {
         List<Card> cards = List.of(redOne, redTwo, redThree, redSkip, greenFive, greenSix, redEight, redNine, blueSkip);
         int numberToDeal = 3;
         assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
@@ -556,7 +569,7 @@ public class GameTests {
                                                     .playCard(redNine, "Tiziano"));
     }
 
-    @Test public void test60CannotPickACardWhenGameIsOver() {
+    @Test public void test61CannotPickACardWhenGameIsOver() {
         List<Card> cards = List.of(redOne, redTwo, redThree, redSkip, greenFive, greenSix, redEight, redNine, blueSkip);
         int numberToDeal = 3;
         assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
@@ -566,6 +579,26 @@ public class GameTests {
                                                     .pickCard("Tiziano")
                                                     .playCard(redSkip, "Mateo")
                                                     .pickCard("Tiziano"));
+    }
+
+    @Test public void test62CannotPlayACardThatWasAlreadyPlayed() {
+        List<Card> cards = List.of(redOne, redTwo, redThree, redSkip, greenFive, greenSix, redEight, redNine, blueSkip, yellowDrawTwo, redDrawTwo);
+        int numberToDeal = 4;
+        assertThrows(Error.class, () -> new Game(cards, numberToDeal, "Mateo", "Tiziano")
+                                                    .playCard(redTwo, "Mateo")
+                                                    .playCard(redEight, "Tiziano")
+                                                    .playCard(redTwo, "Mateo"));
+
+    }
+
+    @Test public void test63CanPlayTheSameCardTwiceIfIsDuplicate() {
+        List<Card> cards = List.of(redOne, redTwo, redTwo, redThree, greenFive, greenSix, redEight, redNine, blueSkip, yellowDrawTwo, redDrawTwo);
+        int numberToDeal = 4;
+        assertEquals(new NumberedCard("2", "red"), new Game(cards, numberToDeal, "Mateo", "Tiziano")
+                                                    .playCard(redTwo, "Mateo")
+                                                    .playCard(redEight, "Tiziano")
+                                                    .playCard(redTwo, "Mateo")
+                                                    .getPileCard());
     }
 }
 

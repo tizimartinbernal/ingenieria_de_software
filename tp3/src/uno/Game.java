@@ -25,59 +25,78 @@ public class Game {
         }
     }
 
-    public Card getPileCard() {
-        if (gameIsClosed) { throw new Error("El juego ya terminó"); }
-        return pileCard;
-    }
+    public Card getPileCard() { return pileCard; }
 
     // ¿No debería haber getters de cardDeck o players?
 
     public Game playCard(Card card, String playerName) {
         if (gameIsClosed) { throw new Error("El juego ya terminó"); }
-        Player currentPlayer = players.getFirst();
-        if (!currentPlayer.getName().equals(playerName) || !currentPlayer.getHand().contains(card)) {
-            throw new Error("No es tu turno o no tienes esa carta: " + playerName + " / " + card);
-        }
 
-        if (card.canStackOn(pileCard)) {
+        Player currentPlayer = players.getFirst();
+        Player player = players.stream()
+                                .filter(p -> p.getName().equals(playerName))
+                                .findFirst()
+                                .orElseThrow(() -> new Error("Jugador inexistente: " + playerName));
+
+        if (player != currentPlayer) { throw new Error("No es el turno de: " + playerName); }
+
+        Card cardToPlay = currentPlayer.getHand().stream()
+                .filter(c -> c.equals(card))
+                .findFirst()
+                .orElseThrow(() -> new Error("No tenés esa carta"));
+
+        if (card.canStackOn(cardToPlay)) {
             pileCard = card;
-            currentPlayer.removeCard(card);
+            currentPlayer.removeCard(card); // ¿Iria cardToPlay?
+
             if (card.getUnoState()) {
+
                 if (currentPlayer.getHand().size() == 1) {
                     return card.cardAction(this);
-                } else {
+                }
+
+                else {
                     pickCardFromCardDeck(currentPlayer); // En este caso, ¿se come 1 o 2 cartas?
                     pickCardFromCardDeck(currentPlayer);
                     return card.cardAction(this);
                 }
             }
+
             if (currentPlayer.getHand().size() == 1) {
-                pickCardFromCardDeck(currentPlayer); // En este caso, ¿se come una
+                pickCardFromCardDeck(currentPlayer); // En este caso, ¿se come una o dos cartas?
                 pickCardFromCardDeck(currentPlayer);
                 return card.cardAction(this);
             }
+
             if (currentPlayer.getHand().size() == 0) {
                 gameIsClosed = true;
                 return card.cardAction(this);
-            } else {
-                return card.cardAction(this);
             }
 
-        } else {
-            throw new Error( "No puedes jugar esa carta: " + card + " / " + pileCard);
+            else { return card.cardAction(this); }
+
         }
+
+        else { throw new Error( "No puedes jugar esa carta: " + card + " / " + pileCard); }
     }
 
     public Game pickCard(String playerName) { // Pude faltar implementar
         if (gameIsClosed) { throw new Error("El juego ya terminó"); }
-        Player current = players.getFirst();
-        if (!current.getName().equals(playerName)) { throw new Error("No es tu turno " + playerName); }
+
+        Player currentPlayer = players.getFirst();
+        Player player = players.stream()
+                .filter(p -> p.getName().equals(playerName))
+                .findFirst()
+                .orElseThrow(() -> new Error("Jugador inexistente: " + playerName));
+
+        if (player != currentPlayer) { throw new Error("No es el turno de: " + playerName); }
+
         Card raisedCard = cardDeck.removeFirst();
         if (raisedCard.canStackOn(pileCard)) {
             pileCard = raisedCard;
             return raisedCard.cardAction(this);
         } else {
-            current.addCard(raisedCard);
+            currentPlayer.addCard(raisedCard);
             advanceTurn();
             return this;
         }
