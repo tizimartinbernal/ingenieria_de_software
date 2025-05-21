@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Game {
-    private boolean gameIsClosed = false; // ¿Tendría que chequear que el juego al craerse no esta en un estado "cerrado"?
+    private boolean gameIsClosed = false;
     private LinkedList<Card> cardDeck;
     private LinkedList<Player> players;
     private Card pileCard;
@@ -45,7 +45,7 @@ public class Game {
                 .findFirst()
                 .orElseThrow(() -> new Error("No tenés esa carta"));
 
-        if (card.canStackOn(cardToPlay)) {
+        if (cardToPlay.canStackOn(pileCard)) {
             pileCard = card;
             currentPlayer.removeCard(card); // ¿Iria cardToPlay?
 

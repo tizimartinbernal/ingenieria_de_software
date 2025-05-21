@@ -530,7 +530,7 @@ public class GameTests {
         assertEquals(new NumberedCard("0", "green"), new Game(cards, numberToDeal, "Mateo", "Tiziano")
                                                                             .playCard(redTwo, "Mateo")
                                                                             .playCard(redEight, "Tiziano")
-                                                                            .playCard(wildCard.assignColor("green").uno(), "Mateo")
+                                                                            .playCard(new WildCard().assignColor("green").uno(), "Mateo") // ¿Debería funcionar con wildCard?
                                                                             .pickCard("Tiziano")
                                                                             .playCard(greenZero, "Mateo")
                                                                             .getPileCard());
