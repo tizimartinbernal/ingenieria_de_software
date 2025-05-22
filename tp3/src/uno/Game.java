@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Game {
+public class Game {    // Falta agregar los errores como atributos
     private boolean gameIsClosed = false;
     private LinkedList<Card> cardDeck;
     private LinkedList<Player> players;
@@ -27,8 +27,6 @@ public class Game {
 
     public Card getPileCard() { return pileCard; }
 
-    // ¿No debería haber getters de cardDeck o players?
-
     public Game playCard(Card card, String playerName) {
         if (gameIsClosed) { throw new Error("El juego ya terminó"); }
 
@@ -36,7 +34,7 @@ public class Game {
         Player player = players.stream()
                                 .filter(p -> p.getName().equals(playerName))
                                 .findFirst()
-                                .orElseThrow(() -> new Error("Jugador inexistente: " + playerName));
+                                .orElseThrow(() -> new Error("Jugador inexistente: " + playerName)); // ¿Es al pedo?
 
         if (player != currentPlayer) { throw new Error("No es el turno de: " + playerName); }
 
@@ -49,31 +47,16 @@ public class Game {
             pileCard = card;
             currentPlayer.removeCard(card); // ¿Iria cardToPlay?
 
-            if (card.getUnoState()) {
+            if (card.getUnoState() == true && currentPlayer.getHand().size() > 1) { throw new Error( "No se puede cantar Uno en este momento de la partida" ); }
 
-                if (currentPlayer.getHand().size() == 1) {
-                    return card.cardAction(this);
-                }
-
-                else {
-                    pickCardFromCardDeck(currentPlayer); // En este caso, ¿se come 1 o 2 cartas?
-                    pickCardFromCardDeck(currentPlayer);
-                    return card.cardAction(this);
-                }
-            }
-
-            if (currentPlayer.getHand().size() == 1) {
+            if (card.getUnoState() == false && currentPlayer.getHand().size() == 1) {
                 pickCardFromCardDeck(currentPlayer); // En este caso, ¿se come una o dos cartas?
                 pickCardFromCardDeck(currentPlayer);
-                return card.cardAction(this);
             }
 
-            if (currentPlayer.getHand().size() == 0) {
-                gameIsClosed = true;
-                return card.cardAction(this);
-            }
+            if (currentPlayer.getHand().size() == 0) { gameIsClosed = true; }
 
-            else { return card.cardAction(this); }
+            return card.cardAction(this);
 
         }
 
@@ -142,9 +125,9 @@ public class Game {
         return this;
     }
 
-    // ¿Las acciones deben ser públicas? ¿Hay que chequear if (gameIsClosed) { throw new Error("El juego ya terminó"); }?
 }
 
+// ¿Las acciones deben ser públicas? ¿Hay que chequear if (gameIsClosed) { throw new Error("El juego ya terminó"); }?
 
 
 // Cosas que faltan:

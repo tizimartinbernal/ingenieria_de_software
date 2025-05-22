@@ -538,13 +538,9 @@ public class GameTests {
 
     @Test public void test58MakeAnInvalidUnoCall() {
         List<Card> cards = List.of(redOne, redTwo, redThree, redSkip, greenFive, greenSix, redEight, redNine, redZero, yellowDrawTwo);
-        int numberToDeal = 3;
-        assertEquals(new NumberedCard("0", "red"), new Game(cards, numberToDeal, "Mateo", "Tiziano")
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
                                                                             .playCard(redTwo, "Mateo")
-                                                                            .playCard(redEight.uno(), "Tiziano")
-                                                                            .playCard(redThree.uno(), "Mateo")
-                                                                            .playCard(redZero, "Tiziano")
-                                                                            .getPileCard());
+                                                                            .playCard(redEight.uno(), "Tiziano"));
     }
 
     @Test public void test59ForgetToCallUno() {
