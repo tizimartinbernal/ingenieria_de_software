@@ -1,78 +1,70 @@
 package uno;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 
-public class Game {    // Falta agregar los errores como atributos
+public class Game {
+    private final String errorClosedGame = "El juego ya terminó";
+    private final String nonExistentPlayer = "Jugador inexistente: ";
+
     private boolean gameIsClosed = false;
-    private LinkedList<Card> cardDeck;
-    private LinkedList<Player> players;
+    private final LinkedList<Card> cardDeck = new LinkedList<>();
+    private final LinkedList<Player> players = new LinkedList<>();
     private Card pileCard;
 
-    public Game(List<Card> cards, int numberToDeal, String... playerNames) { // Que no se rompa si no hay cartas ara un jugador o para el pozo
-        this.cardDeck = new LinkedList<>(cards); // ¿Chequemos que cards no esta vació, que numberToDeal sea >= 0 y que playerNames no esté vacío?
+    public Game(List<Card> cards, int numberToDeal, String... playerNames) {
+        cardDeck.addAll(cards);
         this.pileCard = cardDeck.removeFirst();
-        this.players = new LinkedList<>();
 
-        for (String name : playerNames) {
-            List<Card> hand = new ArrayList<>();
-            for (int i = 0; i < numberToDeal; i++) {
-                hand.add(cardDeck.removeFirst());
-            }
-            players.add(new Player(name, hand));
-        }
+        this.players.addAll(
+                Arrays.stream(playerNames)
+                        .map(name -> {
+                            List<Card> hand = new ArrayList<>(cardDeck.subList(0, numberToDeal));
+                            cardDeck.subList(0, numberToDeal).clear();
+                            return new Player(name, hand);
+                        })
+                        .toList()
+        );
     }
 
     public Card getPileCard() { return pileCard; }
 
     public Game playCard(Card card, String playerName) {
-        if (gameIsClosed) { throw new Error("El juego ya terminó"); }
+        if (gameIsClosed) { throw new Error(errorClosedGame); }
 
         Player currentPlayer = players.getFirst();
-        Player player = players.stream()
-                                .filter(p -> p.getName().equals(playerName))
-                                .findFirst()
-                                .orElseThrow(() -> new Error("Jugador inexistente: " + playerName)); // ¿Es al pedo?
 
-        if (player != currentPlayer) { throw new Error("No es el turno de: " + playerName); }
+        if (!currentPlayer.getName().equals(playerName) || !currentPlayer.hasCard(card)) {throw new Error("No es tu turno o no tienes esa carta: " + playerName);}
 
-        Card cardToPlay = currentPlayer.getHand().stream()
-                .filter(c -> c.equals(card))
-                .findFirst()
-                .orElseThrow(() -> new Error("No tenés esa carta"));
-
-        if (cardToPlay.canStackOn(pileCard)) {
+        if (card.canStackOn(pileCard)) {
             pileCard = card;
-            currentPlayer.removeCard(card); // ¿Iria cardToPlay?
+            currentPlayer.removeCard(card);
 
-            if (card.getUnoState() == true && currentPlayer.getHand().size() > 1) { throw new Error( "No se puede cantar Uno en este momento de la partida" ); }
+            if (card.getUnoState() && currentPlayer.getHand().size() > 1) { throw new Error( "No se puede cantar Uno en este momento de la partida" ); }
 
-            if (card.getUnoState() == false && currentPlayer.getHand().size() == 1) {
-                pickCardFromCardDeck(currentPlayer); // En este caso, ¿se come una o dos cartas?
+            if (!card.getUnoState() && currentPlayer.getHand().size() == 1) {
+                pickCardFromCardDeck(currentPlayer);
                 pickCardFromCardDeck(currentPlayer);
             }
 
-            if (currentPlayer.getHand().size() == 0) { gameIsClosed = true; }
+            if (currentPlayer.getHand().isEmpty()) { gameIsClosed = true; }
 
             return card.cardAction(this);
 
         }
 
-        else { throw new Error( "No puedes jugar esa carta: " + card + " / " + pileCard); }
+        throw new Error( "No puedes jugar esa carta: " + card + " / " + pileCard);
     }
 
     public Game pickCard(String playerName) { // Pude faltar implementar
-        if (gameIsClosed) { throw new Error("El juego ya terminó"); }
+        if (gameIsClosed) { throw new Error(errorClosedGame); }
 
         Player currentPlayer = players.getFirst();
         Player player = players.stream()
                 .filter(p -> p.getName().equals(playerName))
                 .findFirst()
-                .orElseThrow(() -> new Error("Jugador inexistente: " + playerName));
+                .orElseThrow(() -> new Error(nonExistentPlayer + playerName));
 
-        if (player != currentPlayer) { throw new Error("No es el turno de: " + playerName); }
+        if (player != currentPlayer) { throw new Error("No es tu turno: " + playerName); }
 
         Card raisedCard = cardDeck.removeFirst();
         if (raisedCard.canStackOn(pileCard)) {
@@ -128,19 +120,8 @@ public class Game {    // Falta agregar los errores como atributos
 }
 
 // ¿Las acciones deben ser públicas? ¿Hay que chequear if (gameIsClosed) { throw new Error("El juego ya terminó"); }?
-
-
-// Cosas que faltan:
-// implementar que si tiene una carta y no canta uno: se come dos
-// implementar cuando uno gana, que se termine el juego
-// implementar lo de pickCard, para darle a un jugador una carta del mazo
-// implementar atajar si un jugador tira una carta que no tiene
-
-// tests
-
-
-// DUDAS:
-// alguien puede jugar cartas que no tiene? Osea tenemos que hacer el chequeo de que tiene la carta?
-// O acaso si no tiene la carta que dice hacemos que se coma una carta del mazo?
-// Tenemos que chequear que esté jugando el jugador que le corresponde o lo asumimos?
-// Es conceptual esta duda pero la tengo: el advanceTurn() es parte de la dinámica del juego o parte de la acción de la carta que se está jugando?
+// Corregir lo de comerse 2 cartas. Hay que saltear al otro.
+// revisar el codigo repetido en agarrar o tirar.
+// errores en lo de color, signo, etc.
+// revisar lo de UNO de tatha
+// Revisada general

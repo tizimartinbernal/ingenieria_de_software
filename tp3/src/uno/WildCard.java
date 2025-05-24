@@ -15,7 +15,7 @@ class WildCard extends Card {
     public String getSymbol() { return this.getClass().getSimpleName(); }
 
     public boolean canStackOn(Card card) {
-        return assignedColor.canStackOn(card);
+        return true;
     }
 
     public boolean likeColor(String color) {

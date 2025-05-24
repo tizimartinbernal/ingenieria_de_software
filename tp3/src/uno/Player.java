@@ -19,4 +19,6 @@ public class Player {
     public void addCard(Card card) { cards.add(card); }
 
     public void removeCard(Card card) { cards.remove(card); }
+
+    public boolean hasCard(Card card) { return cards.contains(card); }
 }

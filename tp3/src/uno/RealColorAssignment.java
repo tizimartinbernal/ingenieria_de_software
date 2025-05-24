@@ -11,10 +11,6 @@ class RealColorAssignment extends ColorAssignment {
         return this.color.equals(color);
     }
 
-    public boolean canStackOn(Card card) {
-        return card.likeColor(this.color);
-    }
-
     public String toString() {
         return color;
     }
