@@ -7,9 +7,7 @@ class RealColorAssignment extends ColorAssignment {
         this.color = color;
     }
 
-    public boolean matches(String color) {
-        return this.color.equals(color);
-    }
+    public boolean matches(String color) { return getColor().equals(color); }
 
-    public String toString() {return color;}
+    public String getColor() { return color; }
 }

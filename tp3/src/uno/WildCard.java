@@ -1,6 +1,7 @@
 package uno;
 
 class WildCard extends Card {
+    public static String ERROR_GET_NUMBER = "WildCard does not have a number";
     private ColorAssignment assignedColor;
 
     public WildCard() {
@@ -12,19 +13,19 @@ class WildCard extends Card {
         return this;
     }
 
-    public String getColor() {throw new Error ("WildCard does not have a color");}
+    public String getColor() { throw new Error(ERROR_GET_NUMBER); }
 
-    public String getNumber() {return assignedColor.toString();}
+    public String getNumber() { return assignedColor.getColor(); }
 
-    public boolean canStackOn(Card card) {return true;}
+    public boolean canStackOn(Card card) { return true; }
 
-    public boolean likeColor(String color) {return assignedColor.matches(color);}
+    public boolean likeColor(String color) { return assignedColor.matches(color); }
 
-    public boolean likeNumber(String number) {return false;}
+    public boolean likeNumber(String number) { return false; }
 
-    public boolean likeSymbol(String symbol) {return getSymbol().equals(symbol);}
+    public boolean likeSymbol(String symbol) { return getSymbol().equals(symbol); }
 
-    public Game cardAction(Game game) {return game.wildCardAction();}
+    public Game cardAction(Game game) { return game.wildCardAction(); }
 
-    public boolean equals(Object obj) {return this == obj || (obj != null && getClass() == obj.getClass());}
+    public boolean equals(Object obj) { return this == obj || (obj != null && getClass() == obj.getClass()); }
 }

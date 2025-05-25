@@ -1,17 +1,16 @@
 package uno;
 
 class SkipCard extends Card {
+    public static String ERROR_GET_NUMBER = "SkipCard does not have a number";
     private final String color;
 
     public SkipCard(String color) { this.color = color; }
 
     public String getColor() { return color; }
 
-    public String getNumber() {throw new Error ("WildCard does not have a color");}
+    public String getNumber() { throw new Error (ERROR_GET_NUMBER); }
 
-    public boolean canStackOn(Card card) {
-        return card.likeColor(getColor()) || card.likeSymbol(getSymbol());
-    }
+    public boolean canStackOn(Card card) { return card.likeColor(getColor()) || card.likeSymbol(getSymbol()); }
 
     public boolean likeColor(String color) { return getColor().equals(color); }
 
