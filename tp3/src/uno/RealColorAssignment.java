@@ -11,7 +11,5 @@ class RealColorAssignment extends ColorAssignment {
         return this.color.equals(color);
     }
 
-    public String toString() {
-        return color;
-    }
+    public String toString() {return color;}
 }

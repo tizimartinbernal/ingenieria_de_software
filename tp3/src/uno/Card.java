@@ -21,4 +21,11 @@ public abstract class Card {
    public abstract Game cardAction(Game game);
 
    public abstract boolean equals(Object obj);
+
+    public String getSymbol(){return this.getClass().getSimpleName();}
+
+    public abstract String getColor();
+
+    public abstract String getNumber();
+
 }

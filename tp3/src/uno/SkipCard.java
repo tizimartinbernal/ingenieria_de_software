@@ -7,13 +7,13 @@ class SkipCard extends Card {
 
     public String getColor() { return color; }
 
-    public String getSymbol() { return this.getClass().getSimpleName(); }
+    public String getNumber() {throw new Error ("WildCard does not have a color");}
 
     public boolean canStackOn(Card card) {
-        return card.likeColor(color) || card.likeSymbol(getSymbol());
+        return card.likeColor(getColor()) || card.likeSymbol(getSymbol());
     }
 
-    public boolean likeColor(String color) { return this.color.equals(color); }
+    public boolean likeColor(String color) { return getColor().equals(color); }
 
     public boolean likeNumber(String number) { return false; }
 
@@ -21,10 +21,5 @@ class SkipCard extends Card {
 
     public Game cardAction(Game game) { return game.skipCardAction(); }
 
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        SkipCard other = (SkipCard) obj;
-        return color.equals(other.color);
-    }
+    public boolean equals(Object obj) { return this == obj || (obj instanceof SkipCard other && getColor().equals(other.getColor())); }
 }

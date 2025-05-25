@@ -12,29 +12,19 @@ class WildCard extends Card {
         return this;
     }
 
-    public String getSymbol() { return this.getClass().getSimpleName(); }
+    public String getColor() {throw new Error ("WildCard does not have a color");}
 
-    public boolean canStackOn(Card card) {
-        return true;
-    }
+    public String getNumber() {return assignedColor.toString();}
 
-    public boolean likeColor(String color) {
-        return assignedColor.matches(color);
-    }
+    public boolean canStackOn(Card card) {return true;}
 
-    public boolean likeNumber(String number) {
-        return false;
-    }
+    public boolean likeColor(String color) {return assignedColor.matches(color);}
 
-    public boolean likeSymbol(String symbol) {
-        return getSymbol().equals(symbol);
-    }
+    public boolean likeNumber(String number) {return false;}
 
-    public Game cardAction(Game game) {
-        return game.wildCardAction();
-    }
+    public boolean likeSymbol(String symbol) {return getSymbol().equals(symbol);}
 
-    public boolean equals(Object obj) {
-        return this == obj || (obj != null && getClass() == obj.getClass());
-    }
+    public Game cardAction(Game game) {return game.wildCardAction();}
+
+    public boolean equals(Object obj) {return this == obj || (obj != null && getClass() == obj.getClass());}
 }

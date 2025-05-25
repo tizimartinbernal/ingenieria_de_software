@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Player {
     private final String name;
-    private List<Card> cards = new ArrayList<>();
+    private final List<Card> cards = new ArrayList<>();
 
     public Player(String name, List<Card> cards) {
         this.name = name;
@@ -14,11 +14,13 @@ public class Player {
 
     public String getName() { return name; }
 
-    public List<Card> getHand() { return cards; }
-
     public void addCard(Card card) { cards.add(card); }
 
     public void removeCard(Card card) { cards.remove(card); }
 
     public boolean hasCard(Card card) { return cards.contains(card); }
+
+    public boolean mustSayUno() {return cards.size() == 1;}
+
+    public boolean hasWon() { return cards.isEmpty(); }
 }

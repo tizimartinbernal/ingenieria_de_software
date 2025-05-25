@@ -7,13 +7,11 @@ class ReverseCard extends Card {
 
     public String getColor() { return color; }
 
-    public String getSymbol() { return this.getClass().getSimpleName(); }
+    public String getNumber() {throw new Error("ReverseCard does not have a number.");}
 
-    public boolean canStackOn(Card card) {
-        return card.likeColor(color) || card.likeSymbol(getSymbol());
-    }
+    public boolean canStackOn(Card card) {return card.likeColor(getColor()) || card.likeSymbol(getSymbol());}
 
-    public boolean likeColor(String color) { return this.color.equals(color); }
+    public boolean likeColor(String color) { return getColor().equals(color); }
 
     public boolean likeNumber(String number) { return false; }
 
@@ -21,10 +19,5 @@ class ReverseCard extends Card {
 
     public Game cardAction(Game game) { return game.reverseCardAction(); }
 
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        ReverseCard other = (ReverseCard) obj;
-        return color.equals(other.color);
-    }
+    public boolean equals(Object obj) { return this == obj || (obj != null && getClass() == obj.getClass() && getColor().equals(((ReverseCard) obj).getColor())); }
 }

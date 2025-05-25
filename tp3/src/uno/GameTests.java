@@ -125,7 +125,7 @@ public class GameTests {
                                                                             .getPileCard());
     }
 
-    @Test public void test08StackAWildCardOnANumberedCardByColor() {   // Tiene sentido tirar una WildCard sin asignar color? Denería tirar algun error?
+    @Test public void test08StackAWildCardOnANumberedCardByColor() {
         List<Card> cards = List.of(yellowOne, yellowOne, wildCard, greenTwo, blueThree, blueTwo, blueOne);
         assertEquals(new WildCard(), new Game(cards, 2, "Mateo", "Tiziano")
                                                                             .playCard(wildCard, "Mateo")
@@ -167,7 +167,7 @@ public class GameTests {
                                                                             .getPileCard());
     }
 
-    @Test public void test14StackAWildCardOnADrawTwoCardByColor() {   // Tiene sentido tirar una WildCard sin asignar color? Denería tirar algun error?
+    @Test public void test14StackAWildCardOnADrawTwoCardByColor() {
         List<Card> cards = List.of(yellowDrawTwo, wildCard, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
         assertEquals(new WildCard(), new Game(cards, 2, "Mateo", "Tiziano")
                                                                             .playCard(wildCard, "Mateo")
@@ -209,7 +209,7 @@ public class GameTests {
                                                                             .getPileCard());
     }
 
-    @Test public void test20StackAWildCardOnASkipCardByColor() {   // Tiene sentido tirar una WildCard sin asignar color? Denería tirar algun error?
+    @Test public void test20StackAWildCardOnASkipCardByColor() {
         List<Card> cards = List.of(blueSkip, wildCard, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
         assertEquals(new WildCard(), new Game(cards, 2, "Mateo", "Tiziano")
                                                                             .playCard(wildCard, "Mateo")
@@ -251,7 +251,7 @@ public class GameTests {
                                                                             .getPileCard());
     }
 
-    @Test public void test26StackAWildCardOnAReverseCardByColor() {   // Tiene sentido tirar una WildCard sin asignar color? Denería tirar algun error?
+    @Test public void test26StackAWildCardOnAReverseCardByColor() {
         List<Card> cards = List.of(greenReverse, wildCard, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
         assertEquals(new WildCard(), new Game(cards, 2, "Mateo", "Tiziano")
                                                                             .playCard(wildCard, "Mateo")
@@ -286,7 +286,7 @@ public class GameTests {
                                                                             .getPileCard());
     }
 
-    @Test public void test31StackAWildCardOnAWildCard() {   // Tiene sentido tirar una WildCard sin asignar color? Denería tirar algun error?
+    @Test public void test31StackAWildCardOnAWildCard() {
         List<Card> cards = List.of(wildCard, wildCard, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
         assertEquals(new WildCard(), new Game(cards, 2, "Mateo", "Tiziano")
                                                                             .playCard(wildCard, "Mateo")
@@ -400,10 +400,11 @@ public class GameTests {
                                                                             .playCard(redNine, "Mateo"));
     }
 
-    @Test public void test49ShowDrawTwoCardAction() { // Segundo jugador juega una carta que el principio no tiene en su mazo (en particular la segunda del mazo)
+    @Test public void test49ShowDrawTwoCardAction() { // Segundo jugador juega una carta que el principio no tiene en su mazo
         List<Card> cards = List.of(redOne, redDrawTwo, redThree, redFour, redFive, greenFive, redSix, redEight, redNine, redSkip);
         assertEquals(new NumberedCard("9", "red"), new Game(cards, 3, "Mateo", "Tiziano")
                                                                             .playCard(redDrawTwo, "Mateo")
+                                                                            .playCard(redThree.uno(), "Mateo")
                                                                             .playCard(redNine, "Tiziano")
                                                                             .getPileCard());
     }
@@ -428,8 +429,7 @@ public class GameTests {
         List<Card> cards = List.of(redOne, wildCard, redThree, redFour, greenFive, greenNine, redSix, redEight, redNine);
         assertThrows(Error.class, () ->  new Game(cards, 2, "Mateo", "Tiziano", "Matias")
                                                                             .playCard(wildCard.assignColor("red"), "Mateo")
-                                                                            .playCard(greenFive, "Tiziano")
-                                                                            .getPileCard());
+                                                                            .playCard(greenFive, "Tiziano"));
     }
 
     @Test public void test53PickUpACardThatCanBePlayed() {
@@ -472,7 +472,7 @@ public class GameTests {
         assertEquals(new NumberedCard("0", "green"), new Game(cards, 3, "Mateo", "Tiziano")
                                                                             .playCard(redTwo, "Mateo")
                                                                             .playCard(redEight, "Tiziano")
-                                                                            .playCard(wildCard.assignColor("green").uno(), "Mateo") // ¿Debería funcionar con wildCard?
+                                                                            .playCard(wildCard.assignColor("green").uno(), "Mateo")
                                                                             .pickCard("Tiziano")
                                                                             .playCard(greenZero, "Mateo")
                                                                             .getPileCard());
@@ -534,57 +534,3 @@ public class GameTests {
                                                     .getPileCard());
     }
 }
-
-/*
- Tets a realizar:
-
- - Piquear carta y que esta no se puede tirar
-
- - Piquear carta y que esta se tire (ver pozo resultante)
-
- - Jugar un poco y cantar uno
-
- - Penalización al no cantar uno
-
- - Fin de la partida (no se puede hacer ningun movimiento mas)
-*/
-
-
-/*
-Tests:
-Se mandan también!
-
-* Alguna duda de funcionalidad? Ver el juego de minijuegos que nos pasó Emilio!
-* Otro method que tendríamos que tener es el de poder repartirle cartas a un jugador .repartir(Mateo, [R1, B2, G3])
-* Pienso que tal vez podríamos tener otro méthod interno que permita repartir cartas a todos los jugadores dado un mazo, capaz no, ni idea.
-* Por la funcionalidad del juego, preguntar por la carta que está en el pozo se queda corto, tendríamos que poder ir más granular y poder preguntar
-- por ejemplo, J.colorPozo(), J.numeroPozo()
-* Focalizarnos en hacer pasos concretos que nos permita construir funcionalidad, no detenernos en detalles respecto del juego real
-- Los errores que puedo tirar si me dan una carta incorrecta no ayudan a la construcción del problema
-
-Dos alternativas para modelar lo de cartar uno y jugar la anteultima.
-Una creo que dice jugarCantando (Mateo, R2)
-Otra es jugar (Mateo, R2.uno() ).
-
-Hacer distintos constructores. Algunos más laxos.
-Tipos de constructores:
-* Uno de esos constructores puede tener la cantidad de cartas que se le reparten a cada jugador: Game(cards, players, 7) por ejemplo
-* Otro puede tener simplemente la cantidad de jugadores y el mazo de cartas: Game(cards, players) y reparte 7 a cada uno
-* Otro puede tener solo los jugadores: Game(players) y reparte 7 a cada uno con el mazo completo de 108 cartas
-
-Las cartas a considerar en el juego:
-- Todas las cartas numeradas.
-- Carta de robar 2.
-- Carta de reversa.
-- Carta de saltar.
-- Carta comodín.
-
-La implementación y sus tests deben ser determinísticos.
-La partida debe poder iniciar con *2 o más jugadores hasta que alguno se descarte* de todas su cartas siguiendo las reglas del juego.
-*Una vez terminado no se puede seguir jugando*
-
-Es requisito cumplir con todos los criterios vistos a lo largo de la cursada.
-
-DUDAS:
-
- */

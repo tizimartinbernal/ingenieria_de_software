@@ -12,22 +12,15 @@ class NumberedCard extends Card {
 
     public String getColor() { return color; }
 
-    public String getSymbol() { return this.getClass().getSimpleName(); }
+    public boolean canStackOn(Card card) { return card.likeColor(getColor()) || card.likeNumber(getNumber()); }
 
-    public boolean canStackOn(Card card) { return card.likeColor(color) || card.likeNumber(number); }
+    public boolean likeColor(String color) { return getColor().equals(color); }
 
-    public boolean likeColor(String color) { return this.color.equals(color); }
-
-    public boolean likeNumber(String number) { return this.number.equals(number); }
+    public boolean likeNumber(String number) { return getNumber().equals(number); }
 
     public boolean likeSymbol(String symbol) { return getSymbol().equals(symbol); }
 
     public Game cardAction(Game game) { return game.numberedCardAction(); }
 
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        NumberedCard other = (NumberedCard) obj;
-        return color.equals(other.color) && number.equals(other.number);
-    }
+    public boolean equals(Object obj) { return this == obj || (obj instanceof NumberedCard other && getColor().equals(other.getColor()) && getNumber().equals(other.getNumber())); }
 }
