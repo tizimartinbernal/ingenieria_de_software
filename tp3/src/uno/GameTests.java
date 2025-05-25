@@ -73,311 +73,341 @@ public class GameTests {
 
     @Test public void test00CreateOneCardGame() {
         List <Card> cards = List.of(redOne);
-        assertEquals(new NumberedCard("1", "red"), new Game(cards, 0, "Mateo", "Tiziano", "Matias")
-                                                                         .getPileCard());
+        assertEquals(redOne, new Game(cards, 0, "Mateo", "Tiziano", "Matias")
+                                     .getPileCard());
     }
 
     @Test public void test01CreateGameAndDealTwoCardsEach(){
-        List <Card> cards = List.of(yellowOne, greenThree, greenTwo, greenOne, blueThree, blueTwo, blueOne, redThree, redTwo, redOne);
-        assertEquals(new NumberedCard("1", "yellow"), new Game(cards, 2, "Mateo", "Tiziano", "Matias")
-                                                                            .getPileCard());
+        List <Card> cards = List.of(yellowOne, greenThree, greenTwo, greenOne, blueThree, blueTwo, blueOne, redThree, redTwo, redSeven);
+        assertEquals(yellowOne, new Game(cards, 2, "Mateo", "Tiziano", "Matias")
+                                        .getPileCard());
     }
 
     @Test public void test02StackANumberedCardOnANumberedCardByColor() {
-        List<Card> cards = List.of(yellowOne, yellowTwo, greenThree, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new NumberedCard("2", "yellow"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(yellowTwo, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(yellowOne, yellowTwo, greenThree, greenTwo, blueThree, blueTwo, blueOne, yellowThree, yellowFour);
+        assertEquals(yellowTwo, new Game(cards, 3, "Mateo", "Tiziano")
+                                        .playCard(yellowTwo, "Mateo")
+                                        .getPileCard());
     }
 
     @Test public void test03StackANumberedCardOnANumberedCardByNumber() {
-        List<Card> cards = List.of(yellowOne, yellowTwo, greenOne, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new NumberedCard("1", "green"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(greenOne, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(yellowOne, yellowTwo, greenOne, greenTwo, blueSeven, blueSix, blueFive, yellowFive, yellowSix);
+        assertEquals(greenOne, new Game(cards, 3, "Mateo", "Tiziano")
+                                        .playCard(greenOne, "Mateo")
+                                        .getPileCard());
     }
 
     @Test public void test04StackANumberedCardOnANumberedCardByColorAndNumber() {
-        List<Card> cards = List.of(yellowOne, greenTwo, yellowOne, greenOne, blueThree, blueTwo, blueOne);
-        assertEquals(new NumberedCard("1", "yellow"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(yellowOne, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(yellowThree, greenTwo, yellowThree, greenSeven, greenEight, blueTwo, blueOne, yellowSeven, yellowEight);
+        assertEquals(yellowThree, new Game(cards, 3, "Mateo", "Tiziano")
+                                        .playCard(yellowThree, "Mateo")
+                                        .getPileCard());
     }
 
     @Test public void test05StackADrawTwoCardOnANumberedCardByColor() {
-        List<Card> cards = List.of(yellowOne, yellowOne, yellowDrawTwo, greenTwo, blueThree, blueTwo, blueOne, blueZero, yellowZero, yellowOne);
-        assertEquals(new DrawTwoCard("yellow"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(yellowDrawTwo, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(blueEight, yellowOne, blueDrawTwo, greenTwo, blueThree, blueTwo, blueOne, blueZero, yellowZero, yellowOne);
+        assertEquals(blueDrawTwo, new Game(cards, 3, "Mateo", "Tiziano")
+                                          .playCard(blueDrawTwo, "Mateo")
+                                          .getPileCard());
     }
 
     @Test public void test06StackASkipCardOnANumberedCardByColor() {
-        List<Card> cards = List.of(yellowOne, yellowOne, yellowSkip, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new SkipCard("yellow"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(yellowSkip, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(greenZero, yellowOne, greenSkip, greenTwo, blueThree, blueTwo, blueOne, blueNine, yellowNine);
+        assertEquals(greenSkip, new Game(cards, 3, "Mateo", "Tiziano")
+                                        .playCard(greenSkip, "Mateo")
+                                        .getPileCard());
     }
 
     @Test public void test07StackAReverseCardOnANumberedCardByColor() {
-        List<Card> cards = List.of(yellowOne, yellowOne, yellowReverse, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new ReverseCard("yellow"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(yellowReverse, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(redZero, yellowOne, redReverse, greenTwo, blueThree, blueTwo, blueOne, blueNine, yellowNine);
+        assertEquals(redReverse, new Game(cards, 3, "Mateo", "Tiziano")
+                                         .playCard(redReverse, "Mateo")
+                                         .getPileCard());
     }
 
-    @Test public void test08StackAWildCardOnANumberedCardByColor() {
-        List<Card> cards = List.of(yellowOne, yellowOne, wildCard, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new WildCard(), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(wildCard, "Mateo")
-                                                                            .getPileCard());
+    @Test public void test08StackAWildCardOnANumberedCard() {
+        List<Card> cards = List.of(yellowOne, yellowOne, wildCard, greenTwo, blueThree, blueTwo, blueOne, blueNine, yellowNine);
+        assertEquals(wildCard, new Game(cards, 3, "Mateo", "Tiziano")
+                                        .playCard(wildCard.assignColor("blue"), "Mateo")
+                                        .getPileCard());
     }
 
     @Test public void test09StackANumberedCardOnADrawTwoCardByColor() {
-        List<Card> cards = List.of(yellowDrawTwo, yellowOne, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new NumberedCard("1", "yellow"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(yellowOne, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(yellowDrawTwo, yellowOne, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, blueNine, yellowNine);
+        assertEquals(yellowOne, new Game(cards, 3, "Mateo", "Tiziano")
+                                        .playCard(yellowOne, "Mateo")
+                                        .getPileCard());
     }
 
     @Test public void test10StackADrawTwoOnADrawTwoCardBySymbol() {
-        List<Card> cards = List.of(yellowDrawTwo, greenDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, blueSkip, greenReverse);
-        assertEquals(new DrawTwoCard("green"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(greenDrawTwo, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(blueDrawTwo, greenDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, blueSkip, greenReverse);
+        assertEquals(greenDrawTwo, new Game(cards, 3, "Mateo", "Tiziano")
+                                            .playCard(greenDrawTwo, "Mateo")
+                                            .getPileCard());
     }
 
     @Test public void test11StackADrawTwoOnADrawTwoCardByColorAndSymbol() {
-        List<Card> cards = List.of(yellowDrawTwo, yellowDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, blueSkip, greenReverse);
-        assertEquals(new DrawTwoCard("yellow"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(yellowDrawTwo, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(redDrawTwo, redDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, blueSkip, greenReverse);
+        assertEquals(redDrawTwo, new Game(cards, 3, "Mateo", "Tiziano")
+                                         .playCard(redDrawTwo, "Mateo")
+                                         .getPileCard());
     }
 
     @Test public void test12StackASkipOnADrawTwoCardByColor() {
-        List<Card> cards = List.of(yellowDrawTwo, yellowSkip, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new SkipCard("yellow"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(yellowSkip, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(greenDrawTwo, greenSkip, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, blueSkip, greenReverse);
+        assertEquals(greenSkip, new Game(cards, 3, "Mateo", "Tiziano")
+                                        .playCard(greenSkip, "Mateo")
+                                        .getPileCard());
     }
 
     @Test public void test13StackAReverseOnADrawTwoCardByColor() {
-        List<Card> cards = List.of(yellowDrawTwo, yellowReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new ReverseCard("yellow"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(yellowReverse, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(yellowDrawTwo, yellowReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, blueSkip, greenReverse);
+        assertEquals(yellowReverse, new Game(cards, 3, "Mateo", "Tiziano")
+                                            .playCard(yellowReverse, "Mateo")
+                                            .getPileCard());
     }
 
     @Test public void test14StackAWildCardOnADrawTwoCardByColor() {
-        List<Card> cards = List.of(yellowDrawTwo, wildCard, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new WildCard(), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(wildCard, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(blueDrawTwo, wildCard, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, blueSkip, greenReverse);
+        assertEquals(wildCard, new Game(cards, 3, "Mateo", "Tiziano")
+                                        .playCard(wildCard.assignColor("green"), "Mateo")
+                                        .getPileCard());
     }
 
     @Test public void test15StackANumberedCardOnASkipCardByColor() {
-        List<Card> cards = List.of(blueSkip, blueOne, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new NumberedCard("1", "blue"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(blueOne, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(blueSkip, blueOne, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redSkip, greenReverse);
+        assertEquals(blueOne, new Game(cards, 3, "Mateo", "Tiziano")
+                                       .playCard(blueOne, "Mateo")
+                                       .getPileCard());
     }
 
     @Test public void test16StackADrawTwoOnASkipCardByColor() {
-        List<Card> cards = List.of(blueSkip, blueDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, blueZero, yellowZero, yellowOne);
-        assertEquals(new DrawTwoCard("blue"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(blueDrawTwo, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(greenSkip, greenDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, blueZero, yellowZero, yellowOne);
+        assertEquals(greenDrawTwo, new Game(cards, 3, "Mateo", "Tiziano")
+                                            .playCard(greenDrawTwo, "Mateo")
+                                            .getPileCard());
     }
 
     @Test public void test17StackASkipOnASkipCardBySymbol() {
-        List<Card> cards = List.of(blueSkip, greenSkip, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new SkipCard("green"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(greenSkip, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(redSkip, greenSkip, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, blueSkip, greenReverse);
+        assertEquals(greenSkip, new Game(cards, 3, "Mateo", "Tiziano")
+                                        .playCard(greenSkip, "Mateo")
+                                        .getPileCard());
     }
 
     @Test public void test18StackASkipOnASkipCardByColorAndSymbol() {
-        List<Card> cards = List.of(blueSkip, blueSkip, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new SkipCard("blue"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(blueSkip, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(blueSkip, blueSkip, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redSkip, greenReverse);
+        assertEquals(blueSkip, new Game(cards, 3, "Mateo", "Tiziano")
+                                        .playCard(blueSkip, "Mateo")
+                                        .getPileCard());
     }
 
     @Test public void test19StackAReverseOnASkipCardByColor() {
-        List<Card> cards = List.of(blueSkip, blueReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new ReverseCard("blue"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(blueReverse, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(yellowSkip, yellowReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redSkip, greenReverse);
+        assertEquals(yellowReverse, new Game(cards, 3, "Mateo", "Tiziano")
+                                            .playCard(yellowReverse, "Mateo")
+                                            .getPileCard());
     }
 
     @Test public void test20StackAWildCardOnASkipCardByColor() {
-        List<Card> cards = List.of(blueSkip, wildCard, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new WildCard(), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(wildCard, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(blueSkip, wildCard, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redSkip, greenReverse);
+        assertEquals(wildCard, new Game(cards, 3, "Mateo", "Tiziano")
+                                        .playCard(wildCard.assignColor("blue"), "Mateo")
+                                        .getPileCard());
     }
 
     @Test public void test21StackANumberedCardOnAReverseCardByColor() {
-        List<Card> cards = List.of(greenReverse, greenOne, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new NumberedCard("1", "green"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(greenOne, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(greenReverse, greenOne, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redSkip, greenReverse);
+        assertEquals(greenOne, new Game(cards, 3, "Mateo", "Tiziano")
+                                        .playCard(greenOne, "Mateo")
+                                        .getPileCard());
     }
 
     @Test public void test22StackADrawTwoOnAReverseCardByColor() {
-        List<Card> cards = List.of(greenReverse, greenDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, blueZero, yellowZero, yellowOne);
-        assertEquals(new DrawTwoCard("green"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(greenDrawTwo, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(redReverse, redDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, blueZero, yellowZero, yellowOne);
+        assertEquals(redDrawTwo, new Game(cards, 3, "Mateo", "Tiziano")
+                                         .playCard(redDrawTwo, "Mateo")
+                                         .getPileCard());
     }
 
     @Test public void test23StackASkipOnAReverseCardByColor() {
-        List<Card> cards = List.of(greenReverse, greenSkip, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new SkipCard("green"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(greenSkip, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(yellowReverse, redZero, yellowTwo, yellowSkip, blueThree, blueTwo, blueOne, yellowZero, yellowOne);
+        assertEquals(yellowSkip, new Game(cards, 3, "Mateo", "Tiziano")
+                                          .playCard(yellowSkip, "Mateo")
+                                          .getPileCard());
     }
 
     @Test public void test24StackAReverseOnAReverseCardBySymbol() {
-        List<Card> cards = List.of(greenReverse, blueReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new ReverseCard("blue"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(blueReverse, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(greenReverse, blueReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redSkip, greenReverse);
+        assertEquals(blueReverse, new Game(cards, 3, "Mateo", "Tiziano")
+                                           .playCard(blueReverse, "Mateo")
+                                           .getPileCard());
     }
 
     @Test public void test25StackAReverseOnAReverseCardByColorAndSymbol() {
-        List<Card> cards = List.of(greenReverse, greenReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new ReverseCard("green"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(greenReverse, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(redReverse, redReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redSkip, greenReverse);
+        assertEquals(redReverse, new Game(cards, 3, "Mateo", "Tiziano")
+                                          .playCard(redReverse, "Mateo")
+                                          .getPileCard());
     }
 
-    @Test public void test26StackAWildCardOnAReverseCardByColor() {
-        List<Card> cards = List.of(greenReverse, wildCard, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new WildCard(), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(wildCard, "Mateo")
-                                                                            .getPileCard());
+    @Test public void test26StackAWildCardOnAReverseCard() {
+        List<Card> cards = List.of(yellowReverse, wildCard, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redSkip, greenReverse);
+        assertEquals(wildCard, new Game(cards, 3, "Mateo", "Tiziano")
+                                        .playCard(wildCard.assignColor("yellow"), "Mateo")
+                                        .getPileCard());
     }
 
-    @Test public void test27StackANumberedCardOnAWildCard() {
-        List<Card> cards = List.of(wildCard, greenOne, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new NumberedCard("1", "green"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(greenOne, "Mateo")
-                                                                            .getPileCard());
+    @Test public void test27StackANumberedCardOnAWildCardByColor() {
+        List<Card> cards = List.of(greenZero, greenOne, yellowTwo, greenTwo, yellowNine, wildCard, yellowOne, yellowZero, blueSkip);
+        assertEquals(yellowTwo, new Game(cards, 4, "Mateo", "Tiziano")
+                                        .playCard(greenOne, "Mateo")
+                                        .playCard(wildCard.assignColor("yellow"), "Tiziano")
+                                        .playCard(yellowTwo, "Mateo")
+                                        .getPileCard());
     }
 
-    @Test public void test28StackADrawTwoOnAWildCard() {
-        List<Card> cards = List.of(wildCard, greenDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, blueZero, yellowZero, yellowOne);
-        assertEquals(new DrawTwoCard("green"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(greenDrawTwo, "Mateo")
-                                                                            .getPileCard());
+    @Test public void test28StackADrawTwoOnAWildCardByColor() {
+        List<Card> cards = List.of(yellowNine, greenDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, wildCard, blueZero, yellowZero, yellowOne, redDrawTwo);
+        assertEquals(greenDrawTwo, new Game(cards, 4, "Mateo", "Tiziano")
+                                            .playCard(yellowTwo, "Mateo")
+                                            .playCard(wildCard.assignColor("green"), "Tiziano")
+                                            .playCard(greenDrawTwo, "Mateo")
+                                            .getPileCard());
     }
 
     @Test public void test29StackASkipOnAWildCard() {
-        List<Card> cards = List.of(wildCard, greenSkip, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new SkipCard("green"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(greenSkip, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(redNine, blueSkip, yellowTwo, redSix, blueThree, blueTwo, blueOne, wildCard, blueZero, yellowZero, yellowOne);
+        assertEquals(blueSkip, new Game(cards, 4, "Mateo", "Tiziano")
+                                        .playCard(redSix, "Mateo")
+                                        .playCard(wildCard.assignColor("blue"), "Tiziano")
+                                        .playCard(blueSkip, "Mateo")
+                                        .getPileCard());
     }
 
     @Test public void test30StackAReverseOnAWildCard() {
-        List<Card> cards = List.of(wildCard, greenReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new ReverseCard("green"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(greenReverse, "Mateo")
-                                                                            .getPileCard());
+        List<Card> cards = List.of(blueZero, redReverse, yellowTwo, greenTwo, blueThree, wildCard, blueOne, redZero, redOne, greenSkip, yellowSkip);
+        assertEquals(redReverse, new Game(cards, 4, "Mateo", "Tiziano")
+                                          .playCard(blueThree, "Mateo")
+                                          .playCard(wildCard.assignColor("red"), "Tiziano")
+                                          .playCard(redReverse, "Mateo")
+                                          .getPileCard());
     }
 
     @Test public void test31StackAWildCardOnAWildCard() {
-        List<Card> cards = List.of(wildCard, wildCard, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new WildCard(), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(wildCard, "Mateo")
-                                                                            .getPileCard());
-    }
-
-    @Test public void test32StackANumberedCardOnAWildCardWithColor() {
-        List<Card> cards = List.of(wildCard, greenOne, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertEquals(new NumberedCard("1", "green"), new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(greenOne, "Mateo")
+        List<Card> cards = List.of(blueOne, wildCard, yellowTwo, greenTwo, blueThree, wildCard, blueOne, redZero, redOne, greenSkip, yellowSkip);
+        assertEquals(wildCard, new Game(cards, 4, "Mateo", "Tiziano")
+                                                                            .playCard(wildCard.assignColor("yellow"), "Mateo")
+                                                                            .playCard(wildCard.assignColor("blue"), "Tiziano")
                                                                             .getPileCard());
     }
 
     @Test public void test33StackANumberedCardOnANumberedCardWithDifferentColorAndNumberShouldFail() {
-        List<Card> cards = List.of(yellowOne, yellowTwo, greenTwo, greenOne, blueThree, blueTwo, blueOne);
-        assertThrows(Error.class, () -> new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(greenTwo, "Mateo"));
+        List<Card> cards = List.of(yellowOne, yellowTwo, greenTwo, greenOne, blueThree, blueTwo, blueOne, redThree, redTwo);
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
+                                                .playCard(greenTwo, "Mateo"));
     }
 
     @Test public void test34StackANumberedCardOnADrawTwoCardWithDifferentColorShouldFail() {
-        List<Card> cards = List.of(blueDrawTwo, yellowOne, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertThrows(Error.class, () -> new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(yellowOne, "Mateo"));
+        List<Card> cards = List.of(blueDrawTwo, yellowOne, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redDrawTwo, redSkip, greenReverse);
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
+                                                .playCard(yellowOne, "Mateo"));
     }
 
     @Test public void test35StackANumberedCardOnASkipCardWithDifferentColorShouldFail() {
-        List<Card> cards = List.of(blueSkip, yellowOne, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertThrows(Error.class, () -> new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(yellowOne, "Mateo"));
+        List<Card> cards = List.of(blueSkip, yellowOne, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redSkip, redReverse);
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
+                                                .playCard(yellowOne, "Mateo"));
     }
 
     @Test public void test36StackANumberedCardOnAReverseCardWithDifferentColorShouldFail() {
-        List<Card> cards = List.of(blueReverse, yellowOne, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertThrows(Error.class, () -> new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(yellowOne, "Mateo"));
+        List<Card> cards = List.of(blueReverse, yellowOne, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redReverse, redSkip);
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
+                                                .playCard(yellowOne, "Mateo"));
+    }
+
+    @Test public void test36StackANumberedCardOnAWildCardWithDifferentColorShouldFail() {
+        List<Card> cards = List.of(blueSix, wildCard, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, blueZero, redSkip);
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
+                                                .playCard(wildCard.assignColor("red"), "Mateo")
+                                                .playCard(blueTwo, "Tiziano"));
     }
 
     @Test public void test37StackADrawTwoOnANumberedCardWithDifferentColorShouldFail() {
-        List<Card> cards = List.of(yellowOne, blueDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertThrows(Error.class, () -> new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(blueDrawTwo, "Mateo"));
+        List<Card> cards = List.of(yellowOne, blueDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redDrawTwo, redSkip);
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
+                                                .playCard(blueDrawTwo, "Mateo"));
     }
 
     @Test public void test38StackADrawTwoOnASkipCardWithDifferentColorShouldFail() {
-        List<Card> cards = List.of(redSkip, blueDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertThrows(Error.class, () -> new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(blueDrawTwo, "Mateo"));
+        List<Card> cards = List.of(redSkip, blueDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redDrawTwo, redSkip);
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
+                                                .playCard(blueDrawTwo, "Mateo"));
     }
 
     @Test public void test39StackADrawTwoOnAReverseCardWithDifferentColorShouldFail() {
-        List<Card> cards = List.of(redReverse, blueDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertThrows(Error.class, () -> new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(blueDrawTwo, "Mateo"));
+        List<Card> cards = List.of(redReverse, blueDrawTwo, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redDrawTwo, redSkip);
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
+                                                .playCard(blueDrawTwo, "Mateo"));
+    }
+
+    @Test public void test39StackADrawTwoOnAWildCardWithDifferentColorShouldFail() {
+        List<Card> cards = List.of(redZero, wildCard, yellowTwo, greenTwo, blueThree, blueTwo, blueDrawTwo, redDrawTwo, redSkip);
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
+                                                .playCard(wildCard.assignColor("yellow"), "Mateo")
+                                                .playCard(blueDrawTwo, "Tiziano"));
     }
 
     @Test public void test40StackASkipOnANumberedCardWithDifferentColorShouldFail() {
-        List<Card> cards = List.of(yellowOne, blueSkip, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertThrows(Error.class, () -> new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(blueSkip, "Mateo"));
+        List<Card> cards = List.of(yellowOne, blueSkip, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redSkip, redReverse);
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
+                                                .playCard(blueSkip, "Mateo"));
     }
 
     @Test public void test41StackASkipOnADrawTwoCardWithDifferentColorShouldFail() {
-        List<Card> cards = List.of(redDrawTwo, blueSkip, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertThrows(Error.class, () -> new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(blueSkip, "Mateo"));
+        List<Card> cards = List.of(redDrawTwo, blueSkip, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redSkip, redReverse);
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
+                                                .playCard(blueSkip, "Mateo"));
     }
 
     @Test public void test42StackASkipOnAReverseCardWithDifferentColorShouldFail() {
-        List<Card> cards = List.of(yellowReverse, blueSkip, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertThrows(Error.class, () -> new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(blueSkip, "Mateo"));
+        List<Card> cards = List.of(yellowReverse, blueSkip, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redSkip, redReverse);
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
+                                                .playCard(blueSkip, "Mateo"));
+    }
+
+    @Test public void test42StackASkipOnAWildCardWithDifferentColorShouldFail() {
+        List<Card> cards = List.of(yellowReverse, wildCard, yellowTwo, greenTwo, blueSkip, blueTwo, blueOne, redSkip, redReverse);
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
+                .playCard(wildCard.assignColor("green"), "Mateo")
+                .playCard(blueSkip, "Tiziano"));
     }
 
     @Test public void test43StackAReverseOnANumberedCardWithDifferentColorShouldFail() {
-        List<Card> cards = List.of(yellowOne, blueReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertThrows(Error.class, () -> new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(blueReverse, "Mateo"));
+        List<Card> cards = List.of(yellowOne, blueReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redSkip, redReverse);
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
+                                                .playCard(blueReverse, "Mateo"));
     }
 
     @Test public void test44StackAReverseOnADrawTwoCardWithDifferentColorShouldFail() {
-        List<Card> cards = List.of(redDrawTwo, blueReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertThrows(Error.class, () -> new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(blueReverse, "Mateo"));
+        List<Card> cards = List.of(redDrawTwo, blueReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redSkip, redReverse);
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
+                                                .playCard(blueReverse, "Mateo"));
     }
 
     @Test public void test45StackAReverseOnASkipCardWithDifferentColorShouldFail() {
-        List<Card> cards = List.of(redSkip, blueReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne);
-        assertThrows(Error.class, () -> new Game(cards, 2, "Mateo", "Tiziano")
-                                                                            .playCard(blueReverse, "Mateo"));
+        List<Card> cards = List.of(redSkip, blueReverse, yellowTwo, greenTwo, blueThree, blueTwo, blueOne, redSkip, redReverse);
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
+                                                .playCard(blueReverse, "Mateo"));
     }
 
+    @Test public void test45StackAReverseOnAWildCardWithDifferentColorShouldFail() {
+        List<Card> cards = List.of(redZero, wildCard, yellowTwo, greenTwo, blueReverse, blueTwo, blueOne, redSkip, redReverse);
+        assertThrows(Error.class, () -> new Game(cards, 3, "Mateo", "Tiziano")
+                .playCard(wildCard.assignColor("red"), "Mateo")
+                .playCard(blueReverse, "Tiziano"));
+    }
+//Hasta acá llegué
     @Test public void test46AllPlayersPlayOneCard() {
         List<Card> cards = List.of(redOne, redTwo, redThree, redFour, redFive, redSix, yellowTwo, yellowReverse, blueZero, yellowZero, yellowOne);
         assertEquals(new ReverseCard("yellow"), new Game(cards, 3, "Mateo", "Tiziano", "Matias")

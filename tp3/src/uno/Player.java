@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Player {
     private final String name;
-    private final List<Card> cards = new ArrayList<>();
+    private List<Card> cards = new ArrayList<>();
 
     public Player(String name, List<Card> cards) {
         this.name = name;
