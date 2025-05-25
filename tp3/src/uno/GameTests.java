@@ -407,75 +407,112 @@ public class GameTests {
                 .playCard(wildCard.assignColor("red"), "Mateo")
                 .playCard(blueReverse, "Tiziano"));
     }
-//Hasta acá llegué
-    @Test public void test46AllPlayersPlayOneCard() {
-        List<Card> cards = List.of(redOne, redTwo, redThree, redFour, redFive, redSix, yellowTwo, yellowReverse, blueZero, yellowZero, yellowOne);
-        assertEquals(new ReverseCard("yellow"), new Game(cards, 3, "Mateo", "Tiziano", "Matias")
-                                                                            .playCard(redTwo, "Mateo")
-                                                                            .playCard(yellowTwo, "Tiziano")
-                                                                            .playCard(yellowReverse, "Matias")
+
+    @Test public void testXXEqualsWorksOnNumberedCard() {
+        List<Card> cards = List.of(yellowOne, yellowTwo, greenThree, greenTwo, blueThree, blueTwo, blueOne, yellowThree, yellowFour);
+        assertEquals(new NumberedCard("2", "yellow"), new Game(cards, 3, "Mateo", "Tiziano")
+                                                                            .playCard(new NumberedCard("2", "yellow"), "Mateo")
                                                                             .getPileCard());
+    }
+
+    @Test public void testXXEqualsWorksOnDrawTwoCard() {
+        List<Card> cards = List.of(blueOne, blueDrawTwo, greenThree, greenTwo, blueThree, blueTwo, blueOne, yellowThree, yellowFour);
+        assertEquals(new DrawTwoCard("blue"), new Game(cards, 3, "Mateo", "Tiziano")
+                                                            .playCard(new DrawTwoCard("blue"), "Mateo")
+                                                            .getPileCard());
+    }
+
+    @Test public void testXXEqualsWorksOnSkipCard() {
+        List<Card> cards = List.of(blueOne, blueSkip, greenThree, greenTwo, blueThree, blueTwo, blueOne, yellowThree, yellowFour);
+        assertEquals(new SkipCard("blue"), new Game(cards, 3, "Mateo", "Tiziano")
+                                                                            .playCard(new SkipCard("blue"), "Mateo")
+                                                                            .getPileCard());
+    }
+
+    @Test public void testXXEqualsWorksOnReverseCard() {
+        List<Card> cards = List.of(blueOne, blueReverse, greenThree, greenTwo, blueThree, blueTwo, blueOne, yellowThree, yellowFour);
+        assertEquals(new ReverseCard("blue"), new Game(cards, 3, "Mateo", "Tiziano")
+                                                            .playCard(new ReverseCard("blue"), "Mateo")
+                                                            .getPileCard());
+    }
+
+    @Test public void testXXEqualsWorksOnWildCard() {
+        List<Card> cards = List.of(blueOne, wildCard, greenThree, greenTwo, blueThree, blueTwo, blueOne, yellowThree, yellowFour);
+        assertEquals(new WildCard(), new Game(cards, 3, "Mateo", "Tiziano")
+                                                            .playCard(new WildCard().assignColor("blue"), "Mateo")
+                                                            .getPileCard());
+    }
+
+    @Test public void test46AllPlayersPlayOneCardAndCompleteTheRound() {
+        List<Card> cards = List.of(redOne, redTwo, blueZero, redFour, redFive, redSix, yellowTwo, yellowReverse, blueZero, yellowZero, yellowOne, redSkip, redDrawTwo, blueDrawTwo, blueSkip);
+        assertEquals(blueZero, new Game(cards, 4, "Mateo", "Tiziano", "Matias")
+                                        .playCard(redTwo, "Mateo")
+                                        .playCard(yellowTwo, "Tiziano")
+                                        .playCard(yellowZero, "Matias")
+                                        .playCard(blueZero, "Mateo")
+                                        .getPileCard());
     }
 
     @Test public void test47APlayerTrysToPlayOutOfTurn() {
         List<Card> cards = List.of(redOne, redTwo, redThree, redFour, redFive, redSix, greenFour, redEight, redNine);
         assertThrows(Error.class, () -> new Game(cards, 2, "Mateo", "Tiziano", "Matias")
-                                                                            .playCard(redTwo, "Mateo")
-                                                                            .playCard(redSix, "Matias"));
+                                                .playCard(redTwo, "Mateo")
+                                                .playCard(redSix, "Matias"));
+    }
+
+    @Test public void test48APlayerThatNotInTheGameTrysToPlayACard() {
+        List<Card> cards = List.of(redOne, redTwo, redThree, redFour, redFive, redSix, greenFour, redEight, redNine);
+        assertThrows(Error.class, () -> new Game(cards, 2, "Mateo", "Tiziano", "Matias")
+                                                .playCard(redTwo, "Julio"));
     }
 
     @Test public void test48APlayerTrysToPlayACardNotInHand() {
         List<Card> cards = List.of(redOne, redTwo, redThree, redFour, redFive, redSix, greenFour, redEight, redNine);
         assertThrows(Error.class, () -> new Game(cards, 2, "Mateo", "Tiziano", "Matias")
-                                                                            .playCard(redNine, "Mateo"));
+                                                .playCard(redNine, "Mateo"));
     }
 
-    @Test public void test49ShowDrawTwoCardAction() { // Segundo jugador juega una carta que el principio no tiene en su mazo
-        List<Card> cards = List.of(redOne, redDrawTwo, redThree, redFour, redFive, greenFive, redSix, redEight, redNine, redSkip);
-        assertEquals(new NumberedCard("9", "red"), new Game(cards, 3, "Mateo", "Tiziano")
-                                                                            .playCard(redDrawTwo, "Mateo")
-                                                                            .playCard(redThree.uno(), "Mateo")
-                                                                            .playCard(redNine, "Tiziano")
-                                                                            .getPileCard());
+    @Test public void test49ShowDrawTwoCardAction() {
+        List<Card> cards = List.of(redOne, redDrawTwo, redThree, redFour, redFive, greenFive, redSix, redEight, redSkip, redNine, blueSkip, blueDrawTwo);
+        assertEquals(redNine, new Game(cards, 4, "Mateo", "Tiziano")
+                                    .playCard(redDrawTwo, "Mateo")
+                                    .playCard(redThree, "Mateo")
+                                    .playCard(redNine, "Tiziano")
+                                    .getPileCard());
     }
 
     @Test public void test50ShowSkipCardAction() {
         List<Card> cards = List.of(redOne, redSkip, redThree, redFour, redFive, greenFive, redSix, redEight, redNine, redDrawTwo, blueSkip, blueDrawTwo);
-        assertEquals(new NumberedCard("9", "red"), new Game(cards, 3, "Mateo", "Tiziano", "Matias")
-                                                                            .playCard(redSkip, "Mateo")
-                                                                            .playCard(redNine, "Matias")
-                                                                            .getPileCard());
+        assertEquals(redNine, new Game(cards, 3, "Mateo", "Tiziano", "Matias")
+                                                                        .playCard(redSkip, "Mateo")
+                                                                        .playCard(redNine, "Matias")
+                                                                        .getPileCard());
     }
 
     @Test public void test51ShowReverseCardAction() {
         List<Card> cards = List.of(redOne, redReverse, redThree, redFour, redFive, greenFive, redSix, redSkip, redNine, redDrawTwo, redEight, blueSkip, blueDrawTwo, blueReverse);
-        assertEquals(new NumberedCard("8", "red"), new Game(cards, 3, "Mateo", "Tiziano", "Matias", "Julio")
+        assertEquals(redSix, new Game(cards, 3, "Mateo", "Tiziano", "Matias", "Julio")
                                                                             .playCard(redReverse, "Mateo")
                                                                             .playCard(redEight, "Julio")
+                                                                            .playCard(redNine, "Matias")
+                                                                            .playCard(redSix, "Tiziano")
                                                                             .getPileCard());
-    }
-
-    @Test public void test52ShowWildCardAction() {
-        List<Card> cards = List.of(redOne, wildCard, redThree, redFour, greenFive, greenNine, redSix, redEight, redNine);
-        assertThrows(Error.class, () ->  new Game(cards, 2, "Mateo", "Tiziano", "Matias")
-                                                                            .playCard(wildCard.assignColor("red"), "Mateo")
-                                                                            .playCard(greenFive, "Tiziano"));
     }
 
     @Test public void test53PickUpACardThatCanBePlayed() {
         List<Card> cards = List.of(redOne, redTwo, redThree, blueFour, greenFive, redSix, greenSix, redEight, redNine);
-        assertEquals(new NumberedCard("8", "red"), new Game(cards, 3, "Mateo", "Tiziano")
-                                                                            .playCard(redTwo, "Mateo")
-                                                                            .pickCard("Tiziano")
-                                                                            .getPileCard());
+        assertEquals(redEight, new Game(cards, 3, "Mateo", "Tiziano")
+                                    .playCard(redTwo, "Mateo")
+                                    .pickCard("Tiziano")
+                                    .getPileCard());
     }
 
     @Test public void test54PickUpACardThatCannotBePlayed() {
         List<Card> cards = List.of(redOne, redTwo, redThree, blueFour, greenFive, greenSix, redEight, blueSkip, blueDrawTwo);
-        assertEquals(new NumberedCard("2", "red"), new Game(cards, 3, "Mateo", "Tiziano")
-                                                                            .playCard(redTwo, "Mateo")
-                                                                            .pickCard("Tiziano")
-                                                                            .getPileCard());
+        assertEquals(redTwo, new Game(cards, 3, "Mateo", "Tiziano")
+                                    .playCard(redTwo, "Mateo")
+                                    .pickCard("Tiziano")
+                                    .getPileCard());
     }
 
     @Test public void test55PickUpACardWhenIsNotYourTurn() {
@@ -499,7 +536,7 @@ public class GameTests {
 
     @Test public void test57MakeAValidUnoCallWithAWildCard() {
         List<Card> cards = List.of(redOne, redTwo, greenZero, wildCard, greenFive, greenSix, redEight, redNine, blueSkip);
-        assertEquals(new NumberedCard("0", "green"), new Game(cards, 3, "Mateo", "Tiziano")
+        assertEquals(greenZero, new Game(cards, 3, "Mateo", "Tiziano")
                                                                             .playCard(redTwo, "Mateo")
                                                                             .playCard(redEight, "Tiziano")
                                                                             .playCard(wildCard.assignColor("green").uno(), "Mateo")
@@ -517,7 +554,7 @@ public class GameTests {
 
     @Test public void test59ForgetToCallUno() {
         List<Card> cards = List.of(redOne, redTwo, redThree, redZero, greenFive, redEight, blueSkip, redNine);
-        assertEquals(new NumberedCard("8", "red"), new Game(cards, 2, "Mateo", "Tiziano")
+        assertEquals(redEight, new Game(cards, 2, "Mateo", "Tiziano")
                                                                             .playCard(redTwo, "Mateo")
                                                                             .playCard(redZero.uno(), "Tiziano")
                                                                             .playCard(redEight, "Mateo")
@@ -562,5 +599,19 @@ public class GameTests {
                                                     .playCard(redEight, "Tiziano")
                                                     .playCard(redTwo, "Mateo")
                                                     .getPileCard());
+    }
+
+    @Test public void test64WildCardPlayedDifferentTimesInTheSameGame() {
+        List<Card> cards = List.of(redOne, redTwo, greenZero, wildCard, blueFive, blueSeven, greenSix, redEight, redNine, wildCard, yellowDrawTwo, redDrawTwo);
+        int numberToDeal = 5;
+        assertEquals(blueFive, new Game(cards, numberToDeal, "Mateo", "Tiziano")
+                                        .playCard(redTwo, "Mateo")
+                                        .playCard(redEight, "Tiziano")
+                                        .playCard(wildCard.assignColor("green"), "Mateo")
+                                        .playCard(greenSix, "Tiziano")
+                                        .playCard(greenZero, "Mateo")
+                                        .playCard(wildCard.assignColor("blue"), "Tiziano")
+                                        .playCard(blueFive.uno(), "Mateo")
+                                        .getPileCard());
     }
 }
