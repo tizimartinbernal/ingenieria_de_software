@@ -1,14 +1,14 @@
 package uno;
 
 class ReverseCard extends Card {
-    public static String ERROR_GET_NUMBER = "ReverseCard does not have a number";
+    public static String ErrorGetNumber = "Error. ReverseCard does not have a number";
     private final String color;
 
     public ReverseCard(String color) { this.color = color; }
 
     public String getColor() { return color; }
 
-    public String getNumber() { throw new Error(ERROR_GET_NUMBER); }
+    public String getNumber() { throw new Error(ErrorGetNumber); }
 
     public boolean canStackOn(Card card) { return card.likeColor(getColor()) || card.likeSymbol(getSymbol()); }
 

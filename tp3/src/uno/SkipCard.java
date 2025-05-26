@@ -1,14 +1,14 @@
 package uno;
 
 class SkipCard extends Card {
-    public static String ERROR_GET_NUMBER = "SkipCard does not have a number";
+    public static String ErrorGetNumber = "Error. SkipCard does not have a number";
     private final String color;
 
     public SkipCard(String color) { this.color = color; }
 
     public String getColor() { return color; }
 
-    public String getNumber() { throw new Error (ERROR_GET_NUMBER); }
+    public String getNumber() { throw new Error (ErrorGetNumber); }
 
     public boolean canStackOn(Card card) { return card.likeColor(getColor()) || card.likeSymbol(getSymbol()); }
 

@@ -20,7 +20,7 @@ public class Player {
 
     public boolean hasCard(Card card) { return cards.contains(card); }
 
-    public boolean mustSayUno() {return cards.size() == 1;}
+    public boolean mustSayUno() { return cards.size() == 1; }
 
     public boolean hasWon() { return cards.isEmpty(); }
 }

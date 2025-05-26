@@ -1,7 +1,7 @@
 package uno;
 
 class WildCard extends Card {
-    public static String ERROR_GET_NUMBER = "WildCard does not have a number";
+    public static String ErrorGetNumber = "WildCard does not have a number";
     private ColorAssignment assignedColor;
 
     public WildCard() {
@@ -13,7 +13,7 @@ class WildCard extends Card {
         return this;
     }
 
-    public String getColor() { throw new Error(ERROR_GET_NUMBER); }
+    public String getColor() { throw new Error(ErrorGetNumber); }
 
     public String getNumber() { return assignedColor.getColor(); }
 
