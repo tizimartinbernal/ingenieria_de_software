@@ -14,12 +14,13 @@ public class NumberCard extends ColoredCard {
         number = aNumber;
     }
 
-    public boolean acceptsOnTop( Card aCard ) { return super.acceptsOnTop( aCard ) || aCard.yourNumberIs( number );}
-    public boolean yourNumberIs( int number ) { return number == this.number;   }
+    public boolean acceptsOnTop( Card aCard ) { return super.acceptsOnTop( aCard ) || aCard.yourNumberIs( number ); }
+
+    public boolean yourNumberIs( int number ) { return number == this.number; }
 
     public boolean equals( Object o ) { return super.equals( o ) && number == ((NumberCard) o).number; }
-    public int hashCode() {             return Objects.hash( super.hashCode(), number );}
+
+    public int hashCode() { return Objects.hash( super.hashCode(), number ); }
 
     public JsonCard asJson() { return new JsonCard( color, number, getClass().getSimpleName(), unoShouted() ); }
-
 }

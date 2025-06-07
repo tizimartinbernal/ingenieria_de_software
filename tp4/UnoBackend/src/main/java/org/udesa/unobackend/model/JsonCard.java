@@ -11,6 +11,7 @@ public class JsonCard {
     boolean shout;
 
     public JsonCard() {}
+
     public JsonCard( String color, Integer number, String type, boolean shout ) {
         this.color = color;
         this.number = number;

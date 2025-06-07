@@ -5,7 +5,7 @@ public class SkipCard extends ColoredCard {
         return new SkipCard( aJson.getColor() ).shoutAs( aJson.isShout() );
     }
 
-    public SkipCard( String aColor ) { super( aColor );}
+    public SkipCard( String aColor ) { super( aColor ); }
 
     public void affectGame( Match partida ) {
         super.affectGame( partida );

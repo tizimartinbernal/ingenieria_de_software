@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
-
     public static String NotPlayersTurn = "It is not turn of player ";
     private List<Card> hand;
     private String name;

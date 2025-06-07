@@ -13,12 +13,9 @@ public class Match {
     private Card discardPileHead;
     private List<Card> drawPile;
 
-    public static Match newReducedMatch( List<Card> deck, String ... players ) {
-        return new Match( new ArrayList( deck ), 5, List.of( players ) );
-    }
-    public static Match fullMatch( List<Card> deck, List<String> players ) {
-        return new Match( new ArrayList( deck ), 7, players );
-    }
+    public static Match newReducedMatch( List<Card> deck, String ... players ) { return new Match( new ArrayList( deck ), 5, List.of( players ) ); }
+
+    public static Match fullMatch( List<Card> deck, List<String> players ) { return new Match( new ArrayList( deck ), 7, players ); }
 
     public Match( List<Card> deck, int cardsInHand, List<String> players ) {
         discardPileHead = deck.remove( 0 );
@@ -47,13 +44,9 @@ public class Match {
         status.assertTurnOf( playerName );
         Player player = status.player();
 
-        if ( !player.hasCard( aCard ) ) {
-            throw new RuntimeException( NotACardInHand + playerName );
-        }
+        if ( !player.hasCard( aCard ) ) { throw new RuntimeException( NotACardInHand + playerName ); }
 
-        if ( !discardPileHead.acceptsOnTop( aCard ) ) {
-            throw new RuntimeException( CardDoNotMatch );
-        }
+        if ( !discardPileHead.acceptsOnTop( aCard ) ) { throw new RuntimeException( CardDoNotMatch ); }
 
         player.removeCard( aCard );
         discardPileHead = aCard;

@@ -12,13 +12,17 @@ public class WildCard extends Card {
         return this;
     }
 
-    public Card asYellow() {    return asColor( "Yellow" ); }
-    public Card asBlue() {      return asColor( "Blue" );   }
-    public Card asGreen() {     return asColor( "Green" );  }
-    public Card asRed() {       return asColor( "Red" );    }
+    public Card asYellow() { return asColor( "Yellow" ); }
 
-    public boolean acceptsOnTop( Card aCard ) { return  aCard.yourColorIs( assignedColor );   }
-    public boolean yourColorIs( String color ) { return true;  }
+    public Card asBlue() { return asColor( "Blue" ); }
+
+    public Card asGreen() { return asColor( "Green" ); }
+
+    public Card asRed() { return asColor( "Red" ); }
+
+    public boolean acceptsOnTop( Card aCard ) { return  aCard.yourColorIs( assignedColor ); }
+
+    public boolean yourColorIs( String color ) { return true; }
 
     public JsonCard asJson() { return new JsonCard( assignedColor, null, getClass().getSimpleName(), unoShouted() ); }
 

@@ -12,10 +12,15 @@ public abstract class GameStatus {
     public Player player() { return player; };
 
     public abstract GameStatus right();
+
     public abstract GameStatus left();
+
     public abstract void assertTurnOf( String player );
+
     public abstract boolean isOver() ;
 }
+
+
 class GameOver extends GameStatus {
     public static String GameOver = "GameOver";
 
@@ -23,8 +28,9 @@ class GameOver extends GameStatus {
         super( aPlayer );
     }
 
-    public GameStatus right() { return null;    }
-    public GameStatus left() {  return null;    }
+    public GameStatus right() { return null; }
+
+    public GameStatus left() { return null; }
 
     public void assertTurnOf( String player ) {
        throw new RuntimeException( GameOver );
@@ -34,6 +40,8 @@ class GameOver extends GameStatus {
         return true;
     }
 }
+
+
 class Playing extends GameStatus {
     private Playing left;
     private Playing right;
@@ -46,19 +54,17 @@ class Playing extends GameStatus {
         this( aName, aHand );
         linkTo( aPlayer );
     }
+
     public void linkTo( Playing aPlayer ) {
         left = aPlayer;
         aPlayer.right = this;
     }
 
-    public GameStatus right() {     return right; }
-    public GameStatus left() {      return left;  }
+    public GameStatus right() { return right; }
 
-    public void assertTurnOf( String playerName ) {
-        player.assertTurnOf( playerName );
-    }
+    public GameStatus left() { return left; }
 
-    public boolean isOver() {
-        return false;
-    }
+    public void assertTurnOf( String playerName ) { player.assertTurnOf( playerName ); }
+
+    public boolean isOver() { return false; }
 }
