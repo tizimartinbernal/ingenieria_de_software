@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.udesa.unobackend.model.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UnoService {
@@ -19,4 +16,11 @@ public class UnoService {
         matchSessions.put( matchID, Match.fullMatch( dealer.fullDeck(), players ) );
         return matchID;
     }
+
+    public List<Card> playerHand(UUID matchId) {
+        return Optional.ofNullable(matchSessions.get( matchId) )
+                .map(Match::playerHand)
+                .orElse(null);
+    }
+
 }

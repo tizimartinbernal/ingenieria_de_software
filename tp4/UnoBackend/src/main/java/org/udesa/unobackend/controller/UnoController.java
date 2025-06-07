@@ -1,12 +1,15 @@
 package org.udesa.unobackend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.udesa.unobackend.model.Card;
 import org.udesa.unobackend.service.UnoService;
 
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 public class UnoController {
@@ -19,5 +22,15 @@ public class UnoController {
 //    @PostMapping("play/{matchId}/{player}") public ResponseEntity play(@PathVariable UUID matchId, @PathVariable String player, @RequestBody JsonCard card ) {}
 //    @PostMapping("draw/{matchId}/{player}") public ResponseEntity drawCard( @PathVariable UUID matchId, @RequestParam String player ) {}
 //    @GetMapping("activecard/{matchId}") public ResponseEntity activeCard(@PathVariable UUID matchId ) {}
-//    @GetMapping("playerhand/{matchId}") public ResponseEntity playerHand( @PathVariable UUID matchId ) {}
+
+    @GetMapping("playerhand/{matchId}") public ResponseEntity playerHand( @PathVariable UUID matchId ) {
+        List<Card> hand = unoService.playerHand( matchId );
+
+        if (hand == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body("Match with ID " + matchId + " not found.");
+        }
+
+        return ResponseEntity.ok(hand.stream().map(Card::asJson).toList());
+    }
 }
