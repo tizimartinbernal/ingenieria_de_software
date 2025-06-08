@@ -30,7 +30,16 @@ public class UnoController {
         }
     }
 
-//    @PostMapping("draw/{matchId}/{player}") public ResponseEntity drawCard( @PathVariable UUID matchId, @RequestParam String player ) {}
+    // @PostMapping("draw/{matchId}/{player}")
+    @PostMapping("draw/{matchId}") public ResponseEntity drawCard( @PathVariable UUID matchId, @RequestParam String player ) {
+        try {
+            unoService.drawCard(matchId, player);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @GetMapping("activecard/{matchId}") public ResponseEntity activeCard(@PathVariable UUID matchId ) {
         try {
             Card activeCard = unoService.activeCard(matchId);

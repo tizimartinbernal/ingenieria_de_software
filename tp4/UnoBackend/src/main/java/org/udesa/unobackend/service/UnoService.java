@@ -50,4 +50,12 @@ public class UnoService {
         }
         return match.activeCard(); // ¿Manjo de errores?
     }
+
+    public void drawCard(UUID matchId, String player) {
+        Match match = matchSessions.get( matchId );
+        if (match == null) {
+            throw new RuntimeException("Match with ID " + matchId + " not found.");
+        }
+        match.drawCard(player);
+    }
 }
