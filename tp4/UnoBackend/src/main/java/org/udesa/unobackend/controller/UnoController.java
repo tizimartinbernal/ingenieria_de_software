@@ -50,7 +50,6 @@ public class UnoController {
     }
 
     @GetMapping("playerhand/{matchId}") public ResponseEntity playerHand( @PathVariable UUID matchId ) {
-        System.out.println("hola");
         List<Card> hand = unoService.playerHand( matchId );
 
         if (hand == null) {
