@@ -20,20 +20,20 @@ public class UnoService {
         return matchID;
     }
 
-    public void playCard(UUID matchId, String player, JsonCard card) {
-        getMatch(matchId).play( player, card.asCard() );
+    public void playCard(UUID matchId, String player, Card card) {
+        getMatch(matchId).play( player, card);
     }
 
     public void drawCard(UUID matchId, String player) {
         getMatch(matchId).drawCard(player);
     }
 
-    public JsonCard activeCard(UUID matchId) {
-        return getMatch(matchId).activeCard().asJson();
+    public Card activeCard(UUID matchId) {
+        return getMatch(matchId).activeCard();
     }
 
-    public List<JsonCard> playerHand(UUID matchId) {
-        return getMatch(matchId).playerHand().stream().map(Card::asJson).toList();
+    public List<Card> playerHand(UUID matchId) {
+        return getMatch(matchId).playerHand();
     }
 
     private Match getMatch(UUID matchId) {

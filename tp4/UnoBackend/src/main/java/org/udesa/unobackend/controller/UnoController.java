@@ -26,7 +26,7 @@ public class UnoController {
     }
 
     @PostMapping("play/{matchId}/{player}") public ResponseEntity play(@PathVariable UUID matchId, @PathVariable String player, @RequestBody JsonCard card ) {
-        unoService.playCard(matchId, player, card);
+        unoService.playCard(matchId, player, card.asCard());
         return ResponseEntity.ok().build();
     }
 
@@ -36,10 +36,10 @@ public class UnoController {
     }
 
     @GetMapping("activecard/{matchId}") public ResponseEntity activeCard(@PathVariable UUID matchId ) {
-        return ResponseEntity.ok(unoService.activeCard(matchId));
+        return ResponseEntity.ok(unoService.activeCard(matchId).asJson());
     }
 
     @GetMapping("playerhand/{matchId}") public ResponseEntity playerHand( @PathVariable UUID matchId ) {
-        return ResponseEntity.ok(unoService.playerHand( matchId ));
+        return ResponseEntity.ok(unoService.playerHand(matchId).stream().map(Card::asJson).toList());
     }
 }

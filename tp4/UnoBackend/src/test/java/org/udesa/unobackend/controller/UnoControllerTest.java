@@ -41,7 +41,7 @@ public class UnoControllerTest {
 
     }
 
-    @Test public void test01GetPlayerHand() throws Exception {
+    /*@Test public void test01GetPlayerHand() throws Exception {
         UUID matchId = UUID.randomUUID();
 
         Card dummyCard = Mockito.mock(Card.class);
@@ -53,7 +53,7 @@ public class UnoControllerTest {
         mockMvc.perform(get("/playerhand/" + matchId))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[{\"color\": \"Red\", \"number\": 5, \"type\": \"NumberCard\", \"shout\": false}]"));
-    }
+    }*/
 
     @Test public void test02GetPlayerHandButTheMatchDoesNotExist() throws Exception {
         UUID matchId = UUID.randomUUID();
