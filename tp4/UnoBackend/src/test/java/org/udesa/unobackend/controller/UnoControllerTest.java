@@ -1,4 +1,4 @@
-package org.udesa.unobackend.model;
+package org.udesa.unobackend.controller;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.udesa.unobackend.model.Card;
+import org.udesa.unobackend.model.JsonCard;
 import org.udesa.unobackend.service.UnoService;
 
 import java.util.List;
@@ -25,7 +27,7 @@ public class UnoControllerTest {
     @Autowired private MockMvc mockMvc;
     @MockBean private UnoService unoService; // ¿Esta bien que sea @MockBean?
 
-    @Test public void test00CreateAUnoMAtch()  throws Exception {
+    @Test public void test00CreateAUnoMatch()  throws Exception {
         UUID generatedMatchId = UUID.randomUUID();
 
         when(unoService.newMatch(List.of("Mateo", "Tiziano"))).thenReturn(generatedMatchId);

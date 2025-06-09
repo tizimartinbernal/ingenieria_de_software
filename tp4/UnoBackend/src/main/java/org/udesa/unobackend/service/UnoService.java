@@ -1,6 +1,8 @@
 package org.udesa.unobackend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.udesa.unobackend.model.*;
 
@@ -9,53 +11,40 @@ import java.util.*;
 @Service
 public class UnoService {
     @Autowired private Dealer dealer;
-    private Map<UUID, Match> matchSessions = new HashMap<UUID, Match>();
 
-    public UUID newMatch( List<String> players ) { // Debe tener sus errores específicos. Tendríamos que destacarlos?
+    private final Map<UUID, Match> matchSessions = new HashMap<UUID, Match>();
+
+    public UUID newMatch( List<String> players ) {
         UUID matchID = UUID.randomUUID();
         matchSessions.put( matchID, Match.fullMatch( dealer.fullDeck(), players ) );
         return matchID;
     }
 
-    public List<Card> playerHand(UUID matchId) {
-        return Optional.ofNullable(matchSessions.get( matchId) )
-                .map(Match::playerHand)
-                .orElse(null);
-    }
-
-    public void playCard(UUID matchId, String player, Card card) {
-        Match match = matchSessions.get( matchId );
-        if (match == null) {
-            throw new RuntimeException( "Match with ID " + matchId + " not found." );
-        }
-        try {
-            match.play( player, card );
-        } catch (RuntimeException e) {
-            if ( e.getMessage().equals( Player.NotPlayersTurn + player ) ) {
-                throw new IllegalStateException( "It is not the turn of player " + player );
-            } else if ( e.getMessage().equals( Match.NotACardInHand + player ) ) {
-                throw new IllegalArgumentException( "Card is not in the hand of player " + player );
-            } else if ( e.getMessage().equals( Match.CardDoNotMatch ) ) {
-                throw new IllegalArgumentException( "Card does not match the current card's color, number, or kind" );
-            } else {
-                throw new RuntimeException( "Failed to play card: " + e.getMessage() );
-            }
-        }
-    }
-
-    public Card activeCard(UUID matchId) {
-        Match match = matchSessions.get(matchId);
-        if (match == null) {
-            throw new RuntimeException("Match with ID " + matchId + " not found.");
-        }
-        return match.activeCard(); // ¿Manjo de errores?
+    public void playCard(UUID matchId, String player, JsonCard card) {
+        getMatch(matchId).play( player, card.asCard() );
     }
 
     public void drawCard(UUID matchId, String player) {
-        Match match = matchSessions.get( matchId );
-        if (match == null) {
-            throw new RuntimeException("Match with ID " + matchId + " not found.");
-        }
-        match.drawCard(player);
+        getMatch(matchId).drawCard(player);
     }
+
+    public JsonCard activeCard(UUID matchId) {
+        return getMatch(matchId).activeCard().asJson();
+    }
+
+    public List<JsonCard> playerHand(UUID matchId) {
+        return getMatch(matchId).playerHand().stream().map(Card::asJson).toList();
+    }
+
+    private Match getMatch(UUID matchId) {
+        Match match = matchSessions.get(matchId);
+        if (match == null) {
+            throw new RuntimeException( "Match with ID " + matchId + " not found." );
+        }
+        return match;
+    }
+
+
+
+
 }

@@ -16,47 +16,30 @@ import java.util.UUID;
 public class UnoController {
     @Autowired UnoService unoService;
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntime(RuntimeException ex) {
+        return ResponseEntity.internalServerError().body("Error inesperado: " + ex.getMessage());
+    }
+
     @PostMapping("newmatch") public ResponseEntity newMatch( @RequestParam List<String> players ) {
         return ResponseEntity.ok( unoService.newMatch( players ) );
     }
 
     @PostMapping("play/{matchId}/{player}") public ResponseEntity play(@PathVariable UUID matchId, @PathVariable String player, @RequestBody JsonCard card ) {
-        try {
-            Card playableCard = card.asCard();
-            unoService.playCard( matchId, player, playableCard );
-            return ResponseEntity.ok().build();
-        } catch ( RuntimeException e ) {
-            return ResponseEntity.status( HttpStatus.BAD_REQUEST ).body( e.getMessage() );
-        }
+        unoService.playCard(matchId, player, card);
+        return ResponseEntity.ok().build();
     }
 
-    // @PostMapping("draw/{matchId}/{player}")
-    @PostMapping("draw/{matchId}") public ResponseEntity drawCard( @PathVariable UUID matchId, @RequestParam String player ) {
-        try {
-            unoService.drawCard(matchId, player);
-            return ResponseEntity.ok().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    @PostMapping("draw/{matchId}/{player}") public ResponseEntity drawCard( @PathVariable UUID matchId, @PathVariable String player ) {
+        unoService.drawCard(matchId, player);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("activecard/{matchId}") public ResponseEntity activeCard(@PathVariable UUID matchId ) {
-        try {
-            Card activeCard = unoService.activeCard(matchId);
-            return ResponseEntity.ok(activeCard.asJson());
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        return ResponseEntity.ok(unoService.activeCard(matchId));
     }
 
     @GetMapping("playerhand/{matchId}") public ResponseEntity playerHand( @PathVariable UUID matchId ) {
-        List<Card> hand = unoService.playerHand( matchId );
-
-        if (hand == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                .body("Match with ID " + matchId + " not found.");
-        }
-
-        return ResponseEntity.ok(hand.stream().map(Card::asJson).toList());
+        return ResponseEntity.ok(unoService.playerHand( matchId ));
     }
 }
