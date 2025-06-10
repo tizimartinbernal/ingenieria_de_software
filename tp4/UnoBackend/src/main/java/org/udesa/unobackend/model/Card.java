@@ -5,7 +5,7 @@ public abstract class Card {
 
     public Card() {}
 
-    public boolean equals( Object o ) { return  (this == o) || (o != null && getClass() == o.getClass()); }
+    public boolean equals( Object o ) { return  ( this == o ) || ( o != null && getClass() == o.getClass() ); }
 
     public Card uno() { return shoutAs( true ); }
 

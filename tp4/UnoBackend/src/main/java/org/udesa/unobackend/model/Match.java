@@ -44,9 +44,9 @@ public class Match {
         status.assertTurnOf( playerName );
         Player player = status.player();
 
-        if ( !player.hasCard( aCard ) ) { throw new RuntimeException( NotACardInHand + playerName ); }
+        if ( !player.hasCard( aCard ) ) { throw new IllegalArgumentException( NotACardInHand + playerName ); }
 
-        if ( !discardPileHead.acceptsOnTop( aCard ) ) { throw new RuntimeException( CardDoNotMatch ); }
+        if ( !discardPileHead.acceptsOnTop( aCard ) ) { throw new IllegalArgumentException( CardDoNotMatch ); }
 
         player.removeCard( aCard );
         discardPileHead = aCard;

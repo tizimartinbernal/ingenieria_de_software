@@ -33,7 +33,7 @@ class GameOver extends GameStatus {
     public GameStatus left() { return null; }
 
     public void assertTurnOf( String player ) {
-       throw new RuntimeException( GameOver );
+       throw new IllegalArgumentException( GameOver );
     }
 
     public boolean isOver() {

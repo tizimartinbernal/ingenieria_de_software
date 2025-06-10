@@ -16,30 +16,33 @@ import java.util.UUID;
 public class UnoController {
     @Autowired UnoService unoService;
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleRuntime(RuntimeException ex) {
-        return ResponseEntity.internalServerError().body("Error inesperado: " + ex.getMessage());
+    @ExceptionHandler( RuntimeException.class ) public ResponseEntity<String> handleRuntime( RuntimeException exception ) {
+        return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Low-Level Error: " + exception.getMessage() );
+    }
+
+    @ExceptionHandler( IllegalArgumentException.class ) public ResponseEntity<String> handleIllegal( IllegalArgumentException exception ) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body( "Business Error: " + exception.getMessage() );
     }
 
     @PostMapping("newmatch") public ResponseEntity newMatch( @RequestParam List<String> players ) {
         return ResponseEntity.ok( unoService.newMatch( players ) );
     }
 
-    @PostMapping("play/{matchId}/{player}") public ResponseEntity play(@PathVariable UUID matchId, @PathVariable String player, @RequestBody JsonCard card ) {
-        unoService.playCard(matchId, player, card.asCard());
+    @PostMapping("play/{matchId}/{player}") public ResponseEntity play( @PathVariable UUID matchId, @PathVariable String player, @RequestBody JsonCard card ) {
+        unoService.playCard( matchId, player, card.asCard() );
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("draw/{matchId}/{player}") public ResponseEntity drawCard( @PathVariable UUID matchId, @PathVariable String player ) {
-        unoService.drawCard(matchId, player);
+        unoService.drawCard( matchId, player );
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("activecard/{matchId}") public ResponseEntity activeCard(@PathVariable UUID matchId ) {
-        return ResponseEntity.ok(unoService.activeCard(matchId).asJson());
+    @GetMapping("activecard/{matchId}") public ResponseEntity activeCard( @PathVariable UUID matchId ) {
+        return ResponseEntity.ok( unoService.activeCard(matchId).asJson() );
     }
 
     @GetMapping("playerhand/{matchId}") public ResponseEntity playerHand( @PathVariable UUID matchId ) {
-        return ResponseEntity.ok(unoService.playerHand(matchId).stream().map(Card::asJson).toList());
+        return ResponseEntity.ok( unoService.playerHand(matchId).stream().map(Card::asJson).toList() ); // ¿Este es el formato solicitado?
     }
 }

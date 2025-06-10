@@ -14,9 +14,7 @@ public class Player {
     }
 
     public void assertTurnOf( String playerName ) {
-        if ( !name.equals( playerName ) ) {
-            throw new RuntimeException( NotPlayersTurn + playerName );
-        }
+        if ( !name.equals( playerName ) ) { throw new IllegalArgumentException( NotPlayersTurn + playerName ); }
     }
 
     public boolean noCardLeft() {
