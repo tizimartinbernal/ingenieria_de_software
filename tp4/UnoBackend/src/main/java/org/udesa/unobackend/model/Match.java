@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.function.Function;
 
 public class Match {
+    public static String NotEnoughPlayers = "There are not enough players to start the game. 2 or more are required.";
+    public static String EmptyOrNullPlayers = "Player names cannot be null or empty.";
     public static String NotACardInHand = "Not a card in hand of ";
-    public static String CardDoNotMatch = "Card does not match Color, Number or Kind";
+    public static String CardDoNotMatch = "Card does not match Color, Number or Kind.";
     private Function<GameStatus, GameStatus> reverseShift;
     private Function<GameStatus, GameStatus> nextShift;
     private GameStatus status;
@@ -18,6 +20,14 @@ public class Match {
     public static Match fullMatch( List<Card> deck, List<String> players ) { return new Match( new ArrayList( deck ), 7, players ); }
 
     public Match( List<Card> deck, int cardsInHand, List<String> players ) {
+        if ( players == null || players.size() <= 1 ) { throw new IllegalArgumentException( NotEnoughPlayers ); }
+
+        for ( String player : players ) {
+            if (player == null || player.trim().isEmpty()) {
+                throw new IllegalArgumentException( EmptyOrNullPlayers );
+            }
+        }
+
         discardPileHead = deck.remove( 0 );
         nextShift = (status) -> status.right();
         reverseShift = (status) -> status.left();
