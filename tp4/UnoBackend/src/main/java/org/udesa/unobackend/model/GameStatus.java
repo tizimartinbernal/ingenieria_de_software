@@ -22,7 +22,7 @@ public abstract class GameStatus {
 
 
 class GameOver extends GameStatus {
-    public static String GameOver = "GameOver";
+    public static String GameOver = "GameOver.";
 
     public GameOver( Player aPlayer ) {
         super( aPlayer );

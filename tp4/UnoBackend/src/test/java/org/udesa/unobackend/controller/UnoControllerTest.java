@@ -8,8 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.udesa.unobackend.model.Card;
-import org.udesa.unobackend.model.JsonCard;
+import org.udesa.unobackend.model.*;
 import org.udesa.unobackend.service.UnoService;
 
 import java.util.List;
@@ -27,42 +26,77 @@ public class UnoControllerTest {
     @Autowired private MockMvc mockMvc;
     @MockBean private UnoService unoService;
 
-    @Test public void test00CreateAUnoMatch()  throws Exception {
+    @Test public void testCreateAUnoMatch()  throws Exception {
         UUID generatedMatchId = UUID.randomUUID();
 
-        when(unoService.newMatch(List.of("Mateo", "Tiziano"))).thenReturn(generatedMatchId);
+        when( unoService.newMatch( List.of( "Mateo", "Tiziano" ) ) ).thenReturn( generatedMatchId );
 
-        mockMvc.perform(post("/newmatch")
-                            .param("players", "Mateo", "Tiziano")
-                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                )
-                .andExpect(status().isOk())
-                .andExpect(content().string("\"" + generatedMatchId.toString() + "\""));
-
+        mockMvc.perform( post( "/newmatch" )
+                            .param( "players", "Mateo", "Tiziano" )
+                            .contentType( MediaType.APPLICATION_FORM_URLENCODED ) )
+                .andExpect( status().isOk() )
+                .andExpect( content().string( "\"" + generatedMatchId.toString() + "\"" ) );
     }
 
+    @Test public void testCreateNewMatchEmptyPlayersThrowsBadRequest() throws Exception {
+        when( unoService.newMatch( List.of() ) ).thenThrow( new IllegalArgumentException( Match.NotEnoughPlayers ) );
 
-    /*@Test public void test01GetPlayerHand() throws Exception {
+        mockMvc.perform( post( "/newmatch" )
+                        .param( "players", "" )
+                        .contentType( MediaType.APPLICATION_FORM_URLENCODED ) )
+                .andExpect( status().isBadRequest() )
+                .andExpect( content().string( "Business Error: " + Match.NotEnoughPlayers ) );
+    }
+
+    @Test public void testCreateNewMatchWithSinglePlayerThrowsBadRequest() throws Exception {
+        when( unoService.newMatch( List.of( "Mateo" ) ) ).thenThrow( new IllegalArgumentException( Match.NotEnoughPlayers ) );
+
+        mockMvc.perform(post( "/newmatch" )
+                        .contentType( MediaType.APPLICATION_FORM_URLENCODED )
+                        .param( "players", "Mateo" ) )
+                .andExpect( status().isBadRequest() )
+                .andExpect( content().string( "Business Error: " + Match.NotEnoughPlayers ) );
+    }
+
+    @Test public void testCreateNewMatchWithEmptyStringPlayerNamesThrowsBadRequest() throws Exception {
+        when( unoService.newMatch( List.of( "Mateo", "" ) ) ).thenThrow( new IllegalArgumentException( Match.EmptyOrNullPlayers ) );
+
+        mockMvc.perform( post( "/newmatch" )
+                            .contentType( MediaType.APPLICATION_FORM_URLENCODED )
+                            .param( "players", "Mateo", "" ) )
+                .andExpect( status().isBadRequest() )
+                .andExpect( content().string( "Business Error: " + Match.EmptyOrNullPlayers ) );
+    }
+
+    @Test public void testCreateNewMatchWithBlankStringPlayerNameThrowsBadRequest() throws Exception {
+        when( unoService.newMatch( List.of( "Mateo", "  " ) ) ).thenThrow( new IllegalArgumentException( Match.EmptyOrNullPlayers ) );
+
+        mockMvc.perform( post("/newmatch" )
+                        .param( "players", "Mateo", "  " )
+                        .contentType( MediaType.APPLICATION_FORM_URLENCODED ) )
+                .andExpect( status().isBadRequest() )
+                .andExpect( content().string("Business Error: " + Match.EmptyOrNullPlayers ) );
+    }
+
+    @Test public void testRequestTheActiveCardOfAUnoMatch() throws Exception {
         UUID matchId = UUID.randomUUID();
+        Card activeCard = new NumberCard( "Red", 5 );
 
-        Card dummyCard = Mockito.mock(Card.class);
-        JsonCard jsonCard = new JsonCard("Red", 5, "NumberCard", false);
-        when(dummyCard.asJson()).thenReturn(jsonCard);
+        when( unoService.activeCard( matchId) ).thenReturn( activeCard );
 
-        when(unoService.playerHand(matchId)).thenReturn(List.of(dummyCard));
-
-        mockMvc.perform(get("/playerhand/" + matchId))
+        mockMvc.perform( get("/activecard/" + matchId )
+                        .contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect(status().isOk())
-                .andExpect(content().json("[{\"color\": \"Red\", \"number\": 5, \"type\": \"NumberCard\", \"shout\": false}]"));
-    }*/
+                .andExpect(content().json("{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}"));
+    }
 
-    @Test public void test02GetPlayerHandButTheMatchDoesNotExist() throws Exception {
+    @Test public void testRequestActiveCardForNonExistentMatchThrowsNotFound() throws Exception {
         UUID matchId = UUID.randomUUID();
-
-        when(unoService.playerHand(matchId)).thenReturn(null);
-
-        mockMvc.perform(get("/playerhand/" + matchId))
+        when(unoService.activeCard(matchId)).thenThrow(new RuntimeException("Match with ID " + matchId + " not found."));
+        mockMvc.perform(get("/activecard/" + matchId)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Match with ID " + matchId + " not found."));
+                .andExpect(content().string("Low-Level Error: Match with ID " + matchId + " not found."));
     }
+
 }

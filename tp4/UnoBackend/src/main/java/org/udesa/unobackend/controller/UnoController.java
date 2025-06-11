@@ -21,7 +21,7 @@ public class UnoController {
     }
 
     @ExceptionHandler( IllegalArgumentException.class ) public ResponseEntity<String> handleIllegal( IllegalArgumentException exception ) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body( "Business Error: " + exception.getMessage() );
+        return ResponseEntity.status( HttpStatus.BAD_REQUEST ).body( "Business Error: " + exception.getMessage() );
     }
 
     @PostMapping("newmatch") public ResponseEntity newMatch( @RequestParam List<String> players ) {
@@ -39,10 +39,10 @@ public class UnoController {
     }
 
     @GetMapping("activecard/{matchId}") public ResponseEntity activeCard( @PathVariable UUID matchId ) {
-        return ResponseEntity.ok( unoService.activeCard(matchId).asJson() );
+        return ResponseEntity.ok( unoService.activeCard(matchId).asJson() ); // ¿Debemos devolver la carta como Json desde el service o lo dejamos así?
     }
 
     @GetMapping("playerhand/{matchId}") public ResponseEntity playerHand( @PathVariable UUID matchId ) {
-        return ResponseEntity.ok( unoService.playerHand(matchId).stream().map(Card::asJson).toList() ); // ¿Este es el formato solicitado?
+        return ResponseEntity.ok( unoService.playerHand(matchId).stream().map(Card::asJson).toList() );
     }
 }

@@ -18,7 +18,7 @@ public class NumberCard extends ColoredCard {
 
     public boolean yourNumberIs( int number ) { return number == this.number; }
 
-    public boolean equals( Object o ) { return super.equals( o ) && number == ((NumberCard) o).number; }
+    public boolean equals( Object o ) { return super.equals( o ) && number == (( NumberCard ) o).number; }
 
     public int hashCode() { return Objects.hash( super.hashCode(), number ); }
 

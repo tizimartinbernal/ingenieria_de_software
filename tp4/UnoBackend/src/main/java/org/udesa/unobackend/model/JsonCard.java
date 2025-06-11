@@ -4,7 +4,8 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 
 @Getter
-public class JsonCard {
+public class
+JsonCard {
     String color;
     Integer number;
     String type;

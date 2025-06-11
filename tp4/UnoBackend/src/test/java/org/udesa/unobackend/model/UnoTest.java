@@ -214,9 +214,26 @@ public class UnoTest {
         assertActiveCard( match, redDraw2 );
     }
 
+    @Test void testNewReducedMatchWithEmptyPlayersThrowsException() {
+        assertThrowsLike(Match.NotEnoughPlayers, () -> Match.newReducedMatch(deck()));
+    }
+
+    @Test void testNewReducedMatchWithSinglePlayerThrowsException() {
+        assertThrowsLike(Match.NotEnoughPlayers, () -> Match.newReducedMatch(deck(), "A"));
+    }
+
+    @Test void testNewReducedMatchWithEmptyPlayerNameThrowsException() {
+        assertThrowsLike(Match.EmptyOrNullPlayers, () -> Match.newReducedMatch(deck(), "A", "", "B"));
+    }
+
+    @Test void testNewReducedMatchWithWhitespacePlayerNameThrowsException() {
+        assertThrowsLike(Match.EmptyOrNullPlayers, () -> Match.newReducedMatch(deck(), "A", "  ", "B"));
+    }
+
     private static void assertActiveCard( Match match, Card card) {
         assertActiveCard( match, card, card.color() );
     }
+
     private static void assertActiveCard( Match match, Card card, String aColor ) {
         assertTrue( match.acceptsColor( aColor ) );
         assertEquals( card, match.activeCard() );
