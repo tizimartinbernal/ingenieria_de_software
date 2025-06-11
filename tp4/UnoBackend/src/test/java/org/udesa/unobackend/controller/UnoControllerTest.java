@@ -13,6 +13,7 @@ import org.udesa.unobackend.service.UnoService;
 import java.util.List;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -114,7 +115,7 @@ public class UnoControllerTest {
     @Test public void testRequestPlayerHandNonExistentMatchThrowsNotFound() throws Exception {
         UUID matchId = UUID.randomUUID();
 
-        when( unoService.playerHand( matchId ) ).thenThrow( new RuntimeException( "Match with ID " + matchId + " not found.") );
+        when( unoService.playerHand( matchId ) ).thenThrow( new RuntimeException( "Match with ID " + matchId + " not found." ) );
 
         mockMvc.perform( get( "/playerhand/" + matchId )
                             .contentType( MediaType.APPLICATION_JSON ) )
@@ -141,7 +142,7 @@ public class UnoControllerTest {
                 .when( unoService ).drawCard( matchId, player );
 
         mockMvc.perform( post( "/draw/" + matchId + "/" + player )
-                        .contentType( MediaType.APPLICATION_JSON ) )
+                            .contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isBadRequest() )
                 .andExpect( content().string( "Business Error: " + Player.NotPlayersTurn + player ) );
     }
@@ -154,49 +155,79 @@ public class UnoControllerTest {
                 .when( unoService ).drawCard( matchId, player );
 
         mockMvc.perform( post( "/draw/" + matchId + "/" + player )
-                        .contentType( MediaType.APPLICATION_JSON ) )
+                            .contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isNotFound() )
                 .andExpect( content().string( "Low-Level Error: Match with ID " + matchId + " not found." ) );
     }
 
-    @Test
-    public void testPlayCardSuccessfully() throws Exception {
+    @Test public void testPlayCardSuccessfully() throws Exception {
         UUID matchId = UUID.randomUUID();
         String player = "Mateo";
-        JsonCard jsonCard = new JsonCard("Red", 5, "NumberCard", false);
-        doNothing().when(unoService).playCard(eq(matchId), eq(player), any(Card.class));
-        mockMvc.perform(post("/play/" + matchId + "/" + player)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}"))
-                .andExpect(status().isOk());
+        JsonCard jsonCard = new JsonCard( "Red", 5, "NumberCard", false );
+
+        doNothing().when( unoService ).playCard( eq( matchId ), eq( player ), any( Card.class ) );
+
+        mockMvc.perform( post( "/play/" + matchId + "/" + player )
+                        .contentType( MediaType.APPLICATION_JSON )
+                        .content( "{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}" ) )
+                .andExpect( status().isOk() );
     }
 
-    @Test
-    public void testPlayCardInvalidTurnThrowsBadRequest() throws Exception {
+    @Test public void testPlayCardInvalidTurnThrowsBadRequest() throws Exception {
         UUID matchId = UUID.randomUUID();
         String player = "Mateo";
-        JsonCard jsonCard = new JsonCard("Red", 5, "NumberCard", false);
-        doThrow(new IllegalArgumentException(Player.NotPlayersTurn + player))
-                .when(unoService).playCard(eq(matchId), eq(player), any(Card.class));
-        mockMvc.perform(post("/play/" + matchId + "/" + player)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}"))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("Business Error: " + Player.NotPlayersTurn + player));
+        JsonCard jsonCard = new JsonCard( "Red", 5, "NumberCard", false );
+
+        doThrow( new IllegalArgumentException( Player.NotPlayersTurn + player ) )
+                .when( unoService ).playCard( eq( matchId ), eq( player ), any( Card.class ) );
+
+        mockMvc.perform( post( "/play/" + matchId + "/" + player )
+                            .contentType( MediaType.APPLICATION_JSON )
+                            .content( "{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}" ) )
+                .andExpect( status().isBadRequest() )
+                .andExpect( content().string( "Business Error: " + Player.NotPlayersTurn + player ) );
     }
 
-    @Test
-    public void testPlayCardNonExistentMatchThrowsNotFound() throws Exception {
+    @Test public void testPlayCardNonExistentMatchThrowsNotFound() throws Exception {
         UUID matchId = UUID.randomUUID();
         String player = "Mateo";
-        JsonCard jsonCard = new JsonCard("Red", 5, "NumberCard", false);
-        doThrow(new RuntimeException("Match with ID " + matchId + " not found."))
-                .when(unoService).playCard(eq(matchId), eq(player), any(Card.class));
-        mockMvc.perform(post("/play/" + matchId + "/" + player)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}"))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("Low-Level Error: Match with ID " + matchId + " not found."));
+        JsonCard jsonCard = new JsonCard( "Red", 5, "NumberCard", false );
+
+        doThrow( new RuntimeException("Match with ID " + matchId + " not found.") )
+                .when( unoService ).playCard( eq( matchId ), eq( player ), any( Card.class ) );
+
+        mockMvc.perform( post( "/play/" + matchId + "/" + player )
+                            .contentType( MediaType.APPLICATION_JSON )
+                            .content( "{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}" ) )
+                .andExpect( status().isNotFound() )
+                .andExpect( content().string( "Low-Level Error: Match with ID " + matchId + " not found." ) );
+    }
+
+    @Test public void testPlayCardWithInvalidFieldTypeThrowsNotFound() throws Exception {
+        UUID matchId = UUID.randomUUID();
+        String player = "Mateo";
+        String invalidJson = "{\"color\":\"Red\",\"number\":\"five\",\"type\":\"NumberCard\",\"shout\":\"true\"}";
+
+        mockMvc.perform( post("/play/" + matchId + "/" + player )
+                            .contentType( MediaType.APPLICATION_JSON )
+                            .content( invalidJson ) )
+                .andExpect( status().isNotFound() )
+                .andExpect( content().string( containsString("Low-Level Error" ) ) );
+    }
+
+    @Test public void testPlayCardWithNonExistentCardTypeThrowsBadRequest() throws Exception {
+        UUID matchId = UUID.randomUUID();
+        String player = "Mateo";
+        String invalidJson = "{\"color\":\"Grey\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}";
+
+        doThrow( new IllegalArgumentException( Match.NotACardInHand + player ) )
+                .when( unoService ).playCard( eq( matchId ), eq( player ), any( Card.class ) );
+
+        mockMvc.perform( post("/play/" + matchId + "/" + player )
+                            .contentType( MediaType.APPLICATION_JSON )
+                            .content( invalidJson ) )
+                .andExpect( status().isBadRequest() )
+                .andExpect( content().string("Business Error: Not a card in hand of " + player ) );
     }
 
 }
