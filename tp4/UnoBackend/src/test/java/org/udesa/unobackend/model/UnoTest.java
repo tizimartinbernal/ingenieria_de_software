@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -266,4 +268,16 @@ public class UnoTest {
                         green1, red5  );
     }
 
+    @Test public void twoSpecialCardsWithDifferentColorThrowsException() {
+        List<Card> deck = List.of(
+                new NumberCard("Blue", 8),
+                new SkipCard("Blue"), new NumberCard("Blue", 3),
+                new SkipCard("Green"), new NumberCard("Yellow", 5),
+                new NumberCard("Red", 4), new NumberCard("Red", 2),
+                new SkipCard("Yellow")
+        );
+        Match match = new Match(new ArrayList<>(deck), 3, List.of("A", "B"));
+        match.play( "A", new SkipCard("Blue"));
+        assertThrowsLike(Match.CardDoNotMatch, () -> match.play( "A", new SkipCard("Green")));
+    }
 }

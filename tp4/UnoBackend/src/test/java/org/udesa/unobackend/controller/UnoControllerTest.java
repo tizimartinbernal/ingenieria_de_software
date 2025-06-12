@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.udesa.unobackend.model.*;
 import org.udesa.unobackend.service.UnoService;
 
@@ -21,213 +22,278 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 public class UnoControllerTest {
+
     @Autowired private MockMvc mockMvc;
     @MockBean private UnoService unoService;
 
-    @Test public void testCreateAUnoMatch()  throws Exception {
-        UUID generatedMatchId = UUID.randomUUID();
+    private static final String CARD_JSON = "{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}";
+    private static final String EXPECTED_CARD_JSON = "{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}";
+    private static final String EXPECTED_HAND_JSON = "[{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}," +
+            "{\"color\":\"Blue\",\"number\":null,\"type\":\"WildCard\",\"shout\":false}]";
 
-        when( unoService.newMatch( List.of( "Mateo", "Tiziano" ) ) ).thenReturn( generatedMatchId );
+    // Auxiliary Functions
+    private UUID setupMatchCreation( List<String> players, UUID expectedId ) {
+        when( unoService.newMatch( players) ).thenReturn( expectedId );
+        return expectedId;
+    }
 
-        mockMvc.perform( post( "/newmatch" )
-                            .contentType( MediaType.APPLICATION_FORM_URLENCODED )
-                            .param( "players", "Mateo", "Tiziano" ) )
-                .andExpect( status().isOk() )
-                .andExpect( content().string( "\"" + generatedMatchId.toString() + "\"" ) );
+    private void setupMatchCreationException( List<String> players, String errorMessage ) {
+        when( unoService.newMatch( players ) ).thenThrow( new IllegalArgumentException( errorMessage ) );
+    }
+
+    private UUID setupActiveCard( Card card ) {
+        UUID matchId = UUID.randomUUID();
+        when( unoService.activeCard( matchId ) ).thenReturn( card );
+        return matchId;
+    }
+
+    private UUID setupActiveCardException( UUID matchId ) {
+        String errorMessage = getMatchNotFoundMessage( matchId );
+        when( unoService.activeCard( matchId ) ).thenThrow( new RuntimeException( errorMessage ) );
+        return matchId;
+    }
+
+    private UUID setupPlayerHand( List<Card> hand ) {
+        UUID matchId = UUID.randomUUID();
+        when( unoService.playerHand( matchId ) ).thenReturn( hand );
+        return matchId;
+    }
+
+    private UUID setupPlayerHandException( UUID matchId ) {
+        String errorMessage = getMatchNotFoundMessage( matchId );
+        when( unoService.playerHand( matchId ) ).thenThrow( new RuntimeException( errorMessage ) );
+        return matchId;
+    }
+
+    private UUID setupDrawCard( String player ) {
+        UUID matchId = UUID.randomUUID();
+        doNothing().when( unoService ).drawCard( matchId, player );
+        return matchId;
+    }
+
+    private UUID setupDrawCardException( String player, Exception exception, UUID matchId ) {
+        doThrow( exception ).when( unoService ).drawCard( matchId, player );
+        return matchId;
+    }
+
+    private UUID setupPlayCard( String player ) {
+        UUID matchId = UUID.randomUUID();
+        doNothing().when( unoService ).playCard( eq( matchId ), eq( player ), any( Card.class ) );
+        return matchId;
+    }
+
+    private UUID setupPlayCardException( String player, Exception exception, UUID matchId ) {
+        doThrow( exception ).when( unoService ).playCard( eq( matchId ), eq( player ), any( Card.class ) );
+        return matchId;
+    }
+
+    private ResultActions performNewMatchRequest( String... players ) throws Exception {
+        return mockMvc.perform( post("/newmatch" )
+                .contentType( MediaType.APPLICATION_FORM_URLENCODED )
+                .param( "players", players ) );
+    }
+
+    private ResultActions performActiveCardRequest( UUID matchId ) throws Exception {
+        return mockMvc.perform( get( "/activecard/" + matchId )
+                .contentType( MediaType.APPLICATION_JSON ) );
+    }
+
+    private ResultActions performPlayerHandRequest( UUID matchId ) throws Exception {
+        return mockMvc.perform( get( "/playerhand/" + matchId )
+                .contentType( MediaType.APPLICATION_JSON ) );
+    }
+
+    private ResultActions performDrawCardRequest( UUID matchId, String player ) throws Exception {
+        return mockMvc.perform(post( "/draw/" + matchId + "/" + player )
+                .contentType( MediaType.APPLICATION_JSON ) );
+    }
+
+    private ResultActions performPlayCardRequest( UUID matchId, String player, String cardJson ) throws Exception {
+        return mockMvc.perform(post( "/play/" + matchId + "/" + player )
+                .contentType ( MediaType.APPLICATION_JSON )
+                .content( cardJson ) );
+    }
+
+    private void expectSuccessWithContent( ResultActions result, String expectedContent ) throws Exception {
+        result.andExpect( status().isOk() )
+              .andExpect( content().string( expectedContent ) );
+    }
+
+    private void expectSuccessWithJson( ResultActions result, String expectedJson ) throws Exception {
+        result.andExpect( status().isOk() )
+                .andExpect( content().json( expectedJson ) );
+    }
+
+    private void expectBadRequestWithMessage( ResultActions result, String expectedMessage ) throws Exception {
+        result.andExpect( status().isBadRequest() )
+                .andExpect( content().string( "Business Error: " + expectedMessage ) );
+    }
+
+    private void expectNotFoundWithMessage( ResultActions result, String expectedMessage ) throws Exception {
+        result.andExpect( status().isNotFound() )
+                .andExpect( content().string( "Low-Level Error: " + expectedMessage ) );
+    }
+
+    private void expectNotFoundContaining( ResultActions result, String substring ) throws Exception {
+        result.andExpect( status().isNotFound() )
+                .andExpect( content().string(containsString(substring) ) );
+    }
+
+    private String getMatchNotFoundMessage( UUID matchId ) {
+        return "Match with ID " + matchId + " not found.";
+    }
+
+    // Tests
+    @Test public void testCreateAUnoMatch() throws Exception {
+        UUID matchId = setupMatchCreation( List.of( "Mateo", "Tiziano" ), UUID.randomUUID() );
+
+        ResultActions result = performNewMatchRequest( "Mateo", "Tiziano" );
+
+        expectSuccessWithContent( result, "\"" + matchId.toString() + "\"" );
     }
 
     @Test public void testCreateNewMatchEmptyPlayersThrowsBadRequest() throws Exception {
-        when( unoService.newMatch( List.of() ) ).thenThrow( new IllegalArgumentException( Match.NotEnoughPlayers ) );
+        setupMatchCreationException( List.of(), Match.NotEnoughPlayers );
 
-        mockMvc.perform( post( "/newmatch" )
-                            .contentType( MediaType.APPLICATION_FORM_URLENCODED )
-                            .param( "players", "" ) )
-                .andExpect( status().isBadRequest() )
-                .andExpect( content().string( "Business Error: " + Match.NotEnoughPlayers ) );
+        ResultActions result = performNewMatchRequest( "" );
+
+        expectBadRequestWithMessage( result, Match.NotEnoughPlayers );
     }
 
     @Test public void testCreateNewMatchWithSinglePlayerThrowsBadRequest() throws Exception {
-        when( unoService.newMatch( List.of( "Mateo" ) ) ).thenThrow( new IllegalArgumentException( Match.NotEnoughPlayers ) );
+        setupMatchCreationException( List.of( "Mateo" ), Match.NotEnoughPlayers );
 
-        mockMvc.perform(post( "/newmatch" )
-                            .contentType( MediaType.APPLICATION_FORM_URLENCODED )
-                            .param( "players", "Mateo" ) )
-                .andExpect( status().isBadRequest() )
-                .andExpect( content().string( "Business Error: " + Match.NotEnoughPlayers ) );
+        ResultActions result = performNewMatchRequest( "Mateo" );
+
+        expectBadRequestWithMessage( result, Match.NotEnoughPlayers );
     }
 
     @Test public void testCreateNewMatchWithEmptyStringPlayerNamesThrowsBadRequest() throws Exception {
-        when( unoService.newMatch( List.of( "Mateo", "" ) ) ).thenThrow( new IllegalArgumentException( Match.EmptyOrNullPlayers ) );
+        setupMatchCreationException( List.of("Mateo", ""), Match.EmptyOrNullPlayers );
 
-        mockMvc.perform( post( "/newmatch" )
-                            .contentType( MediaType.APPLICATION_FORM_URLENCODED )
-                            .param( "players", "Mateo", "" ) )
-                .andExpect( status().isBadRequest() )
-                .andExpect( content().string( "Business Error: " + Match.EmptyOrNullPlayers ) );
+        ResultActions result = performNewMatchRequest( "Mateo", "" );
+
+        expectBadRequestWithMessage( result, Match.EmptyOrNullPlayers );
     }
 
     @Test public void testCreateNewMatchWithBlankStringPlayerNameThrowsBadRequest() throws Exception {
-        when( unoService.newMatch( List.of( "Mateo", "  " ) ) ).thenThrow( new IllegalArgumentException( Match.EmptyOrNullPlayers ) );
+        setupMatchCreationException( List.of("Mateo", "  "), Match.EmptyOrNullPlayers );
 
-        mockMvc.perform( post("/newmatch" )
-                            .contentType( MediaType.APPLICATION_FORM_URLENCODED )
-                            .param( "players", "Mateo", "  " ) )
-                .andExpect( status().isBadRequest() )
-                .andExpect( content().string( "Business Error: " + Match.EmptyOrNullPlayers ) );
+        ResultActions result = performNewMatchRequest( "Mateo", "  " );
+
+        expectBadRequestWithMessage( result, Match.EmptyOrNullPlayers );
     }
 
     @Test public void testRequestTheActiveCardOfAUnoMatch() throws Exception {
-        UUID matchId = UUID.randomUUID();
         Card activeCard = new NumberCard( "Red", 5 );
+        UUID matchId = setupActiveCard( activeCard );
 
-        when( unoService.activeCard( matchId) ).thenReturn( activeCard );
+        ResultActions result = performActiveCardRequest( matchId );
 
-        mockMvc.perform( get("/activecard/" + matchId )
-                            .contentType( MediaType.APPLICATION_JSON ) )
-                .andExpect( status().isOk() )
-                .andExpect( content().json( "{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}" ) );
+        expectSuccessWithJson( result, EXPECTED_CARD_JSON );
     }
 
     @Test public void testRequestActiveCardForNonExistentMatchThrowsNotFound() throws Exception {
         UUID matchId = UUID.randomUUID();
+        setupActiveCardException( matchId );
 
-        when( unoService.activeCard( matchId ) ).thenThrow( new RuntimeException("Match with ID " + matchId + " not found." ) );
+        ResultActions result = performActiveCardRequest( matchId );
 
-        mockMvc.perform( get( "/activecard/" + matchId )
-                            .contentType( MediaType.APPLICATION_JSON ) )
-                .andExpect( status().isNotFound() )
-                .andExpect( content().string( "Low-Level Error: Match with ID " + matchId + " not found." ) );
+        expectNotFoundWithMessage( result, getMatchNotFoundMessage( matchId ) );
     }
 
     @Test public void testRequestPlayerHandSuccessfully() throws Exception {
-        UUID matchId = UUID.randomUUID();
         List<Card> hand = List.of( new NumberCard( "Red", 5 ), new WildCard().asColor( "Blue" ) );
+        UUID matchId = setupPlayerHand( hand );
 
-        when( unoService.playerHand( matchId ) ).thenReturn( hand );
+        ResultActions result = performPlayerHandRequest( matchId );
 
-        mockMvc.perform( get( "/playerhand/" + matchId )
-                            .contentType( MediaType.APPLICATION_JSON ) )
-                .andExpect( status().isOk() )
-                .andExpect( content().json( "[{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}," +
-                        "{\"color\":\"Blue\",\"number\":null,\"type\":\"WildCard\",\"shout\":false}]" ) );
+        expectSuccessWithJson( result, EXPECTED_HAND_JSON );
     }
 
     @Test public void testRequestPlayerHandNonExistentMatchThrowsNotFound() throws Exception {
         UUID matchId = UUID.randomUUID();
 
-        when( unoService.playerHand( matchId ) ).thenThrow( new RuntimeException( "Match with ID " + matchId + " not found." ) );
+        setupPlayerHandException( matchId );
 
-        mockMvc.perform( get( "/playerhand/" + matchId )
-                            .contentType( MediaType.APPLICATION_JSON ) )
-                .andExpect( status().isNotFound() )
-                .andExpect( content().string( "Low-Level Error: Match with ID " + matchId + " not found." ) );
+        ResultActions result = performPlayerHandRequest( matchId );
+
+        expectNotFoundWithMessage( result, getMatchNotFoundMessage( matchId ) );
     }
 
     @Test public void testDrawCardSuccessfully() throws Exception {
-        UUID matchId = UUID.randomUUID();
-        String player = "Mateo";
+        UUID matchId = setupDrawCard( "Mateo" );
 
-        doNothing().when( unoService ).drawCard( matchId, player );
+        ResultActions result = performDrawCardRequest( matchId, "Mateo" );
 
-        mockMvc.perform( post( "/draw/" + matchId + "/" + player )
-                            .contentType( MediaType.APPLICATION_JSON ) )
-                .andExpect( status().isOk() );
+        result.andExpect( status().isOk() );
     }
 
     @Test public void testDrawCardInvalidTurnThrowsBadRequest() throws Exception {
         UUID matchId = UUID.randomUUID();
-        String player = "Mateo";
 
-        doThrow( new IllegalArgumentException(Player.NotPlayersTurn + player ) )
-                .when( unoService ).drawCard( matchId, player );
+        setupDrawCardException( "Mateo", new IllegalArgumentException( Player.NotPlayersTurn + "Mateo" ), matchId );
 
-        mockMvc.perform( post( "/draw/" + matchId + "/" + player )
-                            .contentType( MediaType.APPLICATION_JSON ) )
-                .andExpect( status().isBadRequest() )
-                .andExpect( content().string( "Business Error: " + Player.NotPlayersTurn + player ) );
+        ResultActions result = performDrawCardRequest( matchId, "Mateo" );
+
+        expectBadRequestWithMessage( result, Player.NotPlayersTurn + "Mateo" );
     }
 
     @Test public void testDrawCardNonExistentMatchThrowsNotFound() throws Exception {
         UUID matchId = UUID.randomUUID();
-        String player = "Mateo";
 
-        doThrow( new RuntimeException( "Match with ID " + matchId + " not found." ) )
-                .when( unoService ).drawCard( matchId, player );
+        setupDrawCardException( "Mateo", new RuntimeException( getMatchNotFoundMessage( matchId ) ), matchId );
 
-        mockMvc.perform( post( "/draw/" + matchId + "/" + player )
-                            .contentType( MediaType.APPLICATION_JSON ) )
-                .andExpect( status().isNotFound() )
-                .andExpect( content().string( "Low-Level Error: Match with ID " + matchId + " not found." ) );
+        ResultActions result = performDrawCardRequest( matchId, "Mateo" );
+
+        expectNotFoundWithMessage( result, getMatchNotFoundMessage( matchId ) );
     }
 
     @Test public void testPlayCardSuccessfully() throws Exception {
-        UUID matchId = UUID.randomUUID();
-        String player = "Mateo";
-        JsonCard jsonCard = new JsonCard( "Red", 5, "NumberCard", false );
+        UUID matchId = setupPlayCard( "Mateo" );
 
-        doNothing().when( unoService ).playCard( eq( matchId ), eq( player ), any( Card.class ) );
+        ResultActions result = performPlayCardRequest( matchId, "Mateo", CARD_JSON );
 
-        mockMvc.perform( post( "/play/" + matchId + "/" + player )
-                        .contentType( MediaType.APPLICATION_JSON )
-                        .content( "{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}" ) )
-                .andExpect( status().isOk() );
+        result.andExpect( status().isOk() );
     }
 
     @Test public void testPlayCardInvalidTurnThrowsBadRequest() throws Exception {
         UUID matchId = UUID.randomUUID();
-        String player = "Mateo";
-        JsonCard jsonCard = new JsonCard( "Red", 5, "NumberCard", false );
 
-        doThrow( new IllegalArgumentException( Player.NotPlayersTurn + player ) )
-                .when( unoService ).playCard( eq( matchId ), eq( player ), any( Card.class ) );
+        setupPlayCardException( "Mateo", new IllegalArgumentException(Player.NotPlayersTurn + "Mateo" ), matchId );
 
-        mockMvc.perform( post( "/play/" + matchId + "/" + player )
-                            .contentType( MediaType.APPLICATION_JSON )
-                            .content( "{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}" ) )
-                .andExpect( status().isBadRequest() )
-                .andExpect( content().string( "Business Error: " + Player.NotPlayersTurn + player ) );
+        ResultActions result = performPlayCardRequest( matchId, "Mateo", CARD_JSON );
+
+        expectBadRequestWithMessage( result, Player.NotPlayersTurn + "Mateo" );
     }
 
     @Test public void testPlayCardNonExistentMatchThrowsNotFound() throws Exception {
         UUID matchId = UUID.randomUUID();
-        String player = "Mateo";
-        JsonCard jsonCard = new JsonCard( "Red", 5, "NumberCard", false );
 
-        doThrow( new RuntimeException("Match with ID " + matchId + " not found.") )
-                .when( unoService ).playCard( eq( matchId ), eq( player ), any( Card.class ) );
+        setupPlayCardException( "Mateo", new RuntimeException(getMatchNotFoundMessage( matchId ) ), matchId );
 
-        mockMvc.perform( post( "/play/" + matchId + "/" + player )
-                            .contentType( MediaType.APPLICATION_JSON )
-                            .content( "{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}" ) )
-                .andExpect( status().isNotFound() )
-                .andExpect( content().string( "Low-Level Error: Match with ID " + matchId + " not found." ) );
+        ResultActions result = performPlayCardRequest( matchId, "Mateo", CARD_JSON );
+
+        expectNotFoundWithMessage( result, getMatchNotFoundMessage( matchId ) );
     }
 
     @Test public void testPlayCardWithInvalidFieldTypeThrowsNotFound() throws Exception {
         UUID matchId = UUID.randomUUID();
-        String player = "Mateo";
         String invalidJson = "{\"color\":\"Red\",\"number\":\"five\",\"type\":\"NumberCard\",\"shout\":\"true\"}";
 
-        mockMvc.perform( post("/play/" + matchId + "/" + player )
-                            .contentType( MediaType.APPLICATION_JSON )
-                            .content( invalidJson ) )
-                .andExpect( status().isNotFound() )
-                .andExpect( content().string( containsString("Low-Level Error" ) ) );
+        ResultActions result = performPlayCardRequest( matchId, "Mateo", invalidJson );
+
+        expectNotFoundContaining( result, "Low-Level Error" );
     }
 
     @Test public void testPlayCardWithNonExistentCardTypeThrowsBadRequest() throws Exception {
         UUID matchId = UUID.randomUUID();
-        String player = "Mateo";
         String invalidJson = "{\"color\":\"Grey\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}";
 
-        doThrow( new IllegalArgumentException( Match.NotACardInHand + player ) )
-                .when( unoService ).playCard( eq( matchId ), eq( player ), any( Card.class ) );
+        setupPlayCardException( "Mateo", new IllegalArgumentException( Match.NotACardInHand + "Mateo" ), matchId );
 
-        mockMvc.perform( post("/play/" + matchId + "/" + player )
-                            .contentType( MediaType.APPLICATION_JSON )
-                            .content( invalidJson ) )
-                .andExpect( status().isBadRequest() )
-                .andExpect( content().string("Business Error: Not a card in hand of " + player ) );
+        ResultActions result = performPlayCardRequest( matchId, "Mateo", invalidJson );
+        
+        expectBadRequestWithMessage( result, "Not a card in hand of " + "Mateo" );
     }
-
 }
