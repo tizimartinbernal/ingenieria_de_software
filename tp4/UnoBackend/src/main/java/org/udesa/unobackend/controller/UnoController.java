@@ -9,6 +9,7 @@ import org.udesa.unobackend.model.Card;
 import org.udesa.unobackend.model.JsonCard;
 import org.udesa.unobackend.service.UnoService;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +23,11 @@ public class UnoController {
 
     @ExceptionHandler( IllegalArgumentException.class ) public ResponseEntity<String> handleIllegal( IllegalArgumentException exception ) {
         return ResponseEntity.status( HttpStatus.BAD_REQUEST ).body( "Business Error: " + exception.getMessage() );
+    }
+
+    @ExceptionHandler({ClassNotFoundException.class, NoSuchMethodException.class, InvocationTargetException.class})
+    public ResponseEntity<String> handleReflectionExceptions(Exception exception) {
+        return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Low-Level Error: JSON parse error: The `number` or `type` value is incorrect or missing" );
     }
 
     @PostMapping("newmatch") public ResponseEntity newMatch( @RequestParam List<String> players ) {
