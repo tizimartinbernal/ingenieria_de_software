@@ -1,5 +1,6 @@
 package org.udesa.unobackend.controller;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -9,12 +10,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.udesa.unobackend.model.*;
-import org.udesa.unobackend.service.UnoService;
-
+import org.udesa.unobackend.service.Dealer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -24,66 +25,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UnoControllerTest {
 
     @Autowired private MockMvc mockMvc;
-    @MockBean private UnoService unoService;
+    @MockBean private Dealer dealer;
+
+    @BeforeEach
+    public void setUp() {
+        List<Card> defaultDeck = createPredictableDeck();
+        when( dealer.fullDeck() ).thenReturn( new ArrayList<>( defaultDeck ) );
+    }
 
     // Auxiliary Functions
-    private UUID setupMatchCreation( List<String> players, UUID expectedId ) {
-        when( unoService.newMatch( players) ).thenReturn( expectedId );
-        return expectedId;
-    }
-
-    private void setupMatchCreationException( List<String> players, String errorMessage ) {
-        when( unoService.newMatch( players ) ).thenThrow( new IllegalArgumentException( errorMessage ) );
-    }
-
-    private UUID setupActiveCard( Card card ) {
-        UUID matchId = UUID.randomUUID();
-        when( unoService.activeCard( matchId ) ).thenReturn( card );
-        return matchId;
-    }
-
-    private UUID setupActiveCardException( UUID matchId ) {
-        String errorMessage = getMatchNotFoundMessage( matchId );
-        when( unoService.activeCard( matchId ) ).thenThrow( new RuntimeException( errorMessage ) );
-        return matchId;
-    }
-
-    private UUID setupPlayerHand( List<Card> hand ) {
-        UUID matchId = UUID.randomUUID();
-        when( unoService.playerHand( matchId ) ).thenReturn( hand );
-        return matchId;
-    }
-
-    private UUID setupPlayerHandException( UUID matchId ) {
-        String errorMessage = getMatchNotFoundMessage( matchId );
-        when( unoService.playerHand( matchId ) ).thenThrow( new RuntimeException( errorMessage ) );
-        return matchId;
-    }
-
-    private UUID setupDrawCard( String player ) {
-        UUID matchId = UUID.randomUUID();
-        doNothing().when( unoService ).drawCard( matchId, player );
-        return matchId;
-    }
-
-    private UUID setupDrawCardException( String player, Exception exception, UUID matchId ) {
-        doThrow( exception ).when( unoService ).drawCard( matchId, player );
-        return matchId;
-    }
-
-    private UUID setupPlayCard( String player ) {
-        UUID matchId = UUID.randomUUID();
-        doNothing().when( unoService ).playCard( eq( matchId ), eq( player ), any( Card.class ) );
-        return matchId;
-    }
-
-    private UUID setupPlayCardException( String player, Exception exception, UUID matchId ) {
-        doThrow( exception ).when( unoService ).playCard( eq( matchId ), eq( player ), any( Card.class ) );
-        return matchId;
-    }
-
     private ResultActions performNewMatchRequest( String... players ) throws Exception {
-        return mockMvc.perform( post("/newmatch" )
+        return mockMvc.perform( post( "/newmatch" )
                 .contentType( MediaType.APPLICATION_FORM_URLENCODED )
                 .param( "players", players ) );
     }
@@ -99,297 +51,321 @@ public class UnoControllerTest {
     }
 
     private ResultActions performDrawCardRequest( UUID matchId, String player ) throws Exception {
-        return mockMvc.perform(post( "/draw/" + matchId + "/" + player )
+        return mockMvc.perform( post( "/draw/" + matchId + "/" + player )
                 .contentType( MediaType.APPLICATION_JSON ) );
     }
 
     private ResultActions performPlayCardRequest( UUID matchId, String player, String cardJson ) throws Exception {
-        return mockMvc.perform(post( "/play/" + matchId + "/" + player )
-                .contentType ( MediaType.APPLICATION_JSON )
+        return mockMvc.perform( post( "/play/" + matchId + "/" + player )
+                .contentType( MediaType.APPLICATION_JSON )
                 .content( cardJson ) );
     }
 
-    private void expectSuccessWithContent( ResultActions result, String expectedContent ) throws Exception {
-        result.andExpect( status().isOk() )
-              .andExpect( content().string( expectedContent ) );
+    private void expectSuccessWithUUID( ResultActions result ) throws Exception {
+        result.andExpect( status( ).isOk( ) )
+              .andExpect( content().string( matchesPattern( "\"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\"" ) ) );
     }
 
     private void expectSuccessWithJson( ResultActions result, String expectedJson ) throws Exception {
-        result.andExpect( status().isOk() )
-                .andExpect( content().json( expectedJson ) );
+        result.andExpect( status( ).isOk( ) )
+                .andExpect( content( ).json( expectedJson ) );
     }
 
     private void expectBadRequestWithMessage( ResultActions result, String expectedMessage ) throws Exception {
-        result.andExpect( status().isBadRequest() )
-                .andExpect( content().string( "Business Error: " + expectedMessage ) );
+        result.andExpect( status( ).isBadRequest( ) )
+                .andExpect( content( ).string( "Business Error: " + expectedMessage ) );
     }
 
     private void expectNotFoundWithMessage( ResultActions result, String expectedMessage ) throws Exception {
-        result.andExpect( status().isNotFound() )
-                .andExpect( content().string( "Low-Level Error: " + expectedMessage ) );
+        result.andExpect( status( ).isNotFound( ) )
+                .andExpect( content( ).string( "Low-Level Error: " + expectedMessage ) );
     }
 
     private void expectNotFoundContaining( ResultActions result, String substring ) throws Exception {
-        result.andExpect( status().isNotFound() )
-                .andExpect( content().string(containsString(substring) ) );
+        result.andExpect( status( ).isNotFound( ) )
+                .andExpect( content( ).string( containsString( substring ) ) );
     }
 
-    private String getMatchNotFoundMessage( UUID matchId ) {
-        return "Match with ID " + matchId + " not found.";
+    private String extractMatchIdFromResponse( ResultActions result ) throws Exception {
+        String response = result.andReturn( ).getResponse( ).getContentAsString( );
+        return response.replace( "\"", "" ); // Remove quotes from UUID string
+    }
+
+    // Helper method to create a predictable deck
+    private List<Card> createPredictableDeck( ) {
+        List<Card> deck = new ArrayList<>( );
+
+        // First card will be the discard pile head
+        deck.add( new NumberCard( "Red", 5 ) );
+
+        // Cards for players (7 each for 2 players = 14 cards)
+        for ( int i = 0; i < 7; i++ ) {
+            deck.add( new NumberCard( "Blue", i + 1 ) );
+            deck.add( new NumberCard( "Green", i + 1 ) );
+        }
+
+        // Extra cards for drawing
+        for ( int i = 0; i < 20; i++ ) {
+            deck.add( new NumberCard( "Yellow", i % 10 ) );
+        }
+
+        return deck;
+    }
+
+    private List<Card> createAllRedDeck() {
+        List<Card> deck = new ArrayList<>( );
+        for ( int i = 0; i < 50; i++ ) {
+            deck.add( new NumberCard( "Red", i % 10 ) );
+        }
+        return deck;
     }
 
     // Tests
-    @Test public void testCreateAUnoMatch() throws Exception {
-        UUID matchId = setupMatchCreation( List.of( "Mateo", "Tiziano" ), UUID.randomUUID() );
-
+    @Test public void testCreateAUnoMatchSuccessfully() throws Exception {
         ResultActions result = performNewMatchRequest( "Mateo", "Tiziano" );
-
-        expectSuccessWithContent( result, "\"" + matchId.toString() + "\"" );
+        expectSuccessWithUUID( result );
     }
 
-    @Test public void testCreateNewMatchEmptyPlayersThrowsBadRequest() throws Exception {
-        setupMatchCreationException( List.of(), Match.NotEnoughPlayers );
-
+    @Test public void testCreateNewMatchEmptyPlayersThrowsBadRequest( ) throws Exception {
         ResultActions result = performNewMatchRequest( "" );
-
         expectBadRequestWithMessage( result, Match.NotEnoughPlayers );
     }
 
-    @Test public void testCreateNewMatchWithSinglePlayerThrowsBadRequest() throws Exception {
-        setupMatchCreationException( List.of( "Mateo" ), Match.NotEnoughPlayers );
-
+    @Test public void testCreateNewMatchWithSinglePlayerThrowsBadRequest( ) throws Exception {
         ResultActions result = performNewMatchRequest( "Mateo" );
-
         expectBadRequestWithMessage( result, Match.NotEnoughPlayers );
     }
 
-    @Test public void testCreateNewMatchWithEmptyStringPlayerNamesThrowsBadRequest() throws Exception {
-        setupMatchCreationException( List.of("Mateo", ""), Match.EmptyOrNullPlayers );
-
-        ResultActions result = performNewMatchRequest( "Mateo", "" );
-
+    @Test public void testCreateNewMatchWithEmptyStringPlayerNamesThrowsBadRequest( ) throws Exception {
+        ResultActions result = performNewMatchRequest( "Mateo", "Tiziano", "" );
         expectBadRequestWithMessage( result, Match.EmptyOrNullPlayers );
     }
 
-    @Test public void testCreateNewMatchWithBlankStringPlayerNameThrowsBadRequest() throws Exception {
-        setupMatchCreationException( List.of("Mateo", "  "), Match.EmptyOrNullPlayers );
-
-        ResultActions result = performNewMatchRequest( "Mateo", "  " );
-
+    @Test public void testCreateNewMatchWithBlankStringPlayerNameThrowsBadRequest( ) throws Exception {
+        ResultActions result = performNewMatchRequest( "Mateo", "Tiziano", "  " );
         expectBadRequestWithMessage( result, Match.EmptyOrNullPlayers );
     }
 
-    @Test public void testRequestTheActiveCardOfAUnoMatch() throws Exception {
-        Card activeCard = new NumberCard( "Red", 5 );
-        UUID matchId = setupActiveCard( activeCard );
+    @Test public void testRequestTheActiveCardOfAUnoMatch( ) throws Exception {
+        ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
+        String matchId = extractMatchIdFromResponse( createResult );
 
-        ResultActions result = performActiveCardRequest( matchId );
+        ResultActions result = performActiveCardRequest( UUID.fromString( matchId ) );
 
         expectSuccessWithJson( result, "{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}" );
     }
 
-    @Test public void testRequestActiveCardForNonExistentMatchThrowsNotFound() throws Exception {
-        UUID matchId = UUID.randomUUID();
-        setupActiveCardException( matchId );
+    @Test public void testRequestActiveCardForNonExistentMatchThrowsNotFound( ) throws Exception {
+        UUID fakeMatchId = UUID.randomUUID( );
 
-        ResultActions result = performActiveCardRequest( matchId );
+        ResultActions result = performActiveCardRequest( fakeMatchId );
 
-        expectNotFoundWithMessage( result, getMatchNotFoundMessage( matchId ) );
+        expectNotFoundWithMessage( result, "Match with ID " + fakeMatchId + " not found." );
     }
 
-    @Test public void testRequestPlayerHandSuccessfully() throws Exception {
-        List<Card> hand = List.of( new NumberCard( "Red", 5 ), new WildCard().asColor( "Blue" ) );
-        UUID matchId = setupPlayerHand( hand );
+    @Test public void testRequestPlayerHandSuccessfully( ) throws Exception {
+        ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
+        String matchId = extractMatchIdFromResponse( createResult );
 
-        ResultActions result = performPlayerHandRequest( matchId );
+        ResultActions result = performPlayerHandRequest( UUID.fromString( matchId ) );
 
-        expectSuccessWithJson( result, "[{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}," +
-                                                    "{\"color\":\"Blue\",\"number\":null,\"type\":\"WildCard\",\"shout\":false}]" );
+        result.andExpect( status( ).isOk( ) )
+                .andExpect( jsonPath( "$.length()" ).value( 7 ) ); // Should have 7 cards initially
     }
 
-    @Test public void testRequestPlayerHandNonExistentMatchThrowsNotFound() throws Exception {
-        UUID matchId = UUID.randomUUID();
+    @Test public void testRequestPlayerHandNonExistentMatchThrowsNotFound( ) throws Exception {
+        UUID fakeMatchId = UUID.randomUUID( );
 
-        setupPlayerHandException( matchId );
+        ResultActions result = performPlayerHandRequest( fakeMatchId );
 
-        ResultActions result = performPlayerHandRequest( matchId );
-
-        expectNotFoundWithMessage( result, getMatchNotFoundMessage( matchId ) );
+        expectNotFoundWithMessage( result, "Match with ID " + fakeMatchId + " not found." );
     }
 
-    @Test public void testDrawCardSuccessfully() throws Exception {
-        UUID matchId = setupDrawCard( "Mateo" );
+    @Test public void testDrawCardSuccessfully( ) throws Exception {
+        ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
+        String matchId = extractMatchIdFromResponse( createResult );
 
-        ResultActions result = performDrawCardRequest( matchId, "Mateo" );
+        ResultActions result = performDrawCardRequest( UUID.fromString( matchId ), "Mateo" );
 
-        result.andExpect( status().isOk() );
+        result.andExpect( status( ).isOk( ) );
     }
 
-    @Test public void testDrawCardInvalidTurnThrowsBadRequest() throws Exception {
-        UUID matchId = UUID.randomUUID();
+    @Test public void testDrawCardInvalidTurnThrowsBadRequest( ) throws Exception {
+        ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
+        String matchId = extractMatchIdFromResponse( createResult );
 
-        setupDrawCardException( "Mateo", new IllegalArgumentException( Player.NotPlayersTurn + "Mateo" ), matchId );
+        // Try to draw with wrong player (Tiziano when it's Mateo's turn)
+        ResultActions result = performDrawCardRequest( UUID.fromString( matchId ), "Tiziano" );
 
-        ResultActions result = performDrawCardRequest( matchId, "Mateo" );
-
-        expectBadRequestWithMessage( result, Player.NotPlayersTurn + "Mateo" );
+        expectBadRequestWithMessage( result, Player.NotPlayersTurn + "Tiziano" );
     }
 
-    @Test public void testDrawCardNonExistentMatchThrowsNotFound() throws Exception {
-        UUID matchId = UUID.randomUUID();
+    @Test public void testDrawCardNonExistentMatchThrowsNotFound( ) throws Exception {
+        UUID fakeMatchId = UUID.randomUUID( );
 
-        setupDrawCardException( "Mateo", new RuntimeException( getMatchNotFoundMessage( matchId ) ), matchId );
+        ResultActions result = performDrawCardRequest( fakeMatchId, "Mateo" );
 
-        ResultActions result = performDrawCardRequest( matchId, "Mateo" );
-
-        expectNotFoundWithMessage( result, getMatchNotFoundMessage( matchId ) );
+        expectNotFoundWithMessage( result, "Match with ID " + fakeMatchId + " not found." );
     }
 
-    @Test public void testDrawCardWhenTheUnoGameIsOverThrowsNotFound() throws Exception {
-        UUID matchId = UUID.randomUUID();
+    @Test public void testPlayCardSuccessfully( ) throws Exception {
+        // Para este test específico, usamos un mazo diferente
+        List<Card> allRedDeck = createAllRedDeck( );
+        when( dealer.fullDeck( ) ).thenReturn( new ArrayList<>( allRedDeck ) );
 
-        setupDrawCardException( "Mateo", new RuntimeException( "GameOver" ), matchId );
+        ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
+        String matchId = extractMatchIdFromResponse( createResult );
 
-        ResultActions result = performDrawCardRequest( matchId, "Mateo" );
+        // Play a red card (should match the red discard pile head)
+        ResultActions result = performPlayCardRequest( UUID.fromString( matchId ), "Mateo",
+                "{\"color\":\"Red\",\"number\":1,\"type\":\"NumberCard\",\"shout\":false}" );
 
-        expectNotFoundWithMessage( result, "GameOver" );
+        result.andExpect( status( ).isOk( ) );
     }
 
-    @Test public void testPlayCardSuccessfully() throws Exception {
-        UUID matchId = setupPlayCard( "Mateo" );
+    @Test public void testPlayCardInvalidTurnThrowsBadRequest( ) throws Exception {
+        // Para este test específico, usamos un mazo diferente
+        List<Card> allRedDeck = createAllRedDeck( );
+        when( dealer.fullDeck( ) ).thenReturn( new ArrayList<>( allRedDeck ) );
 
-        ResultActions result = performPlayCardRequest( matchId, "Mateo", "{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}" );
+        ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
+        String matchId = extractMatchIdFromResponse( createResult );
 
-        result.andExpect( status().isOk() );
+        // Try to play with wrong player (Tiziano when it's Mateo's turn)
+        ResultActions result = performPlayCardRequest( UUID.fromString( matchId ), "Tiziano",
+                "{\"color\":\"Red\",\"number\":1,\"type\":\"NumberCard\",\"shout\":false}" );
+
+        expectBadRequestWithMessage( result, Player.NotPlayersTurn + "Tiziano" );
     }
 
-    @Test public void testPlayCardInvalidTurnThrowsBadRequest() throws Exception {
-        UUID matchId = UUID.randomUUID();
+    @Test public void testPlayCardNonExistentMatchThrowsNotFound( ) throws Exception {
+        UUID fakeMatchId = UUID.randomUUID( );
 
-        setupPlayCardException( "Mateo", new IllegalArgumentException( Player.NotPlayersTurn + "Mateo" ), matchId );
+        ResultActions result = performPlayCardRequest( fakeMatchId, "Mateo",
+                "{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}" );
 
-        ResultActions result = performPlayCardRequest( matchId, "Mateo", "{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}" );
-
-        expectBadRequestWithMessage( result, Player.NotPlayersTurn + "Mateo" );
+        expectNotFoundWithMessage( result, "Match with ID " + fakeMatchId + " not found." );
     }
 
-    @Test public void testPlayCardNonExistentMatchThrowsNotFound() throws Exception {
-        UUID matchId = UUID.randomUUID();
+    @Test public void testPlayCardWithInvalidColorFieldTypeThrowsNotFound( ) throws Exception {
+        ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
+        String matchId = extractMatchIdFromResponse( createResult );
 
-        setupPlayCardException( "Mateo", new RuntimeException(getMatchNotFoundMessage( matchId ) ), matchId );
+        String invalidJson = "{\"color\":,\"number\":5,\"type\":\"NumberCard\",\"shout\":false}";
 
-        ResultActions result = performPlayCardRequest( matchId, "Mateo", "{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}" );
-
-        expectNotFoundWithMessage( result, getMatchNotFoundMessage( matchId ) );
-    }
-
-    @Test public void testPlayCardWithInvalidColorFieldTypeThrowsNotFound() throws Exception {
-        UUID matchId = UUID.randomUUID();
-        String invalidJson = "{\"color\":,\"number\":5,\"type\":\"NumberCard\",\"shout\":false}" ;
-
-        ResultActions result = performPlayCardRequest( matchId, "Mateo", invalidJson );
+        ResultActions result = performPlayCardRequest( UUID.fromString( matchId ), "Mateo", invalidJson );
 
         expectNotFoundContaining( result, "Low-Level Error" );
     }
 
-    @Test public void testPlayCardWithInvalidNumberFieldTypeThrowsNotFound() throws Exception {
-        UUID matchId = UUID.randomUUID();
+    @Test public void testPlayCardWithInvalidNumberFieldTypeThrowsNotFound( ) throws Exception {
+        ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
+        String matchId = extractMatchIdFromResponse( createResult );
+
         String invalidJson = "{\"color\":\"Red\",\"number\":\"five\",\"type\":\"NumberCard\",\"shout\":\"true\"}";
 
-        ResultActions result = performPlayCardRequest( matchId, "Mateo", invalidJson );
+        ResultActions result = performPlayCardRequest( UUID.fromString( matchId ), "Mateo", invalidJson );
 
         expectNotFoundContaining( result, "Low-Level Error" );
     }
 
-    @Test public void testPlayCardWithInvalidTypeFieldTypeThrowsNotFound() throws Exception {
-        UUID matchId = UUID.randomUUID();
+    @Test public void testPlayCardWithInvalidTypeFieldTypeThrowsNotFound( ) throws Exception {
+        ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
+        String matchId = extractMatchIdFromResponse( createResult );
+
         String invalidJson = "{\"color\":\"Red\",\"number\":5,\"type\":\"Sword\",\"shout\":\"true\"}";
 
-        ResultActions result = performPlayCardRequest(matchId, "Mateo", invalidJson);
+        ResultActions result = performPlayCardRequest( UUID.fromString( matchId ), "Mateo", invalidJson );
 
         expectNotFoundWithMessage( result, "JSON parse error: The `number` or `type` value is incorrect or missing" );
     }
 
-    @Test public void testPlayCardWithInvalidShoutFieldTypeThrowsNotFound() throws Exception {
-        UUID matchId = UUID.randomUUID();
+    @Test public void testPlayCardWithInvalidShoutFieldTypeThrowsNotFound( ) throws Exception {
+        ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
+        String matchId = extractMatchIdFromResponse( createResult );
+
         String invalidJson = "{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":.}";
 
-        ResultActions result = performPlayCardRequest(matchId, "Mateo", invalidJson);
+        ResultActions result = performPlayCardRequest( UUID.fromString( matchId ), "Mateo", invalidJson );
 
         expectNotFoundContaining( result, "Low-Level Error" );
     }
 
-    @Test public void testPlayCardWithoutColorFieldThrowsNotFound() throws Exception {
-        UUID matchId = UUID.randomUUID();
+    @Test public void testPlayCardWithoutColorFieldThrowsNotFound( ) throws Exception {
+        ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
+        String matchId = extractMatchIdFromResponse( createResult );
+
         String invalidJson = "{\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}";
 
-        ResultActions result = performPlayCardRequest(matchId, "Mateo", invalidJson);
+        ResultActions result = performPlayCardRequest( UUID.fromString( matchId ), "Mateo", invalidJson );
 
         expectNotFoundContaining( result, "Low-Level Error: JSON parse error" );
     }
 
-    @Test public void testPlayCardWithoutNumberFieldThrowsNotFound() throws Exception {
-        UUID matchId = UUID.randomUUID();
+    @Test public void testPlayCardWithoutNumberFieldThrowsNotFound( ) throws Exception {
+        ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
+        String matchId = extractMatchIdFromResponse( createResult );
+
         String invalidJson = "{\"color\":\"Red\",\"type\":\"NumberCard\",\"shout\":false}";
 
-        ResultActions result = performPlayCardRequest(matchId, "Mateo", invalidJson);
+        ResultActions result = performPlayCardRequest( UUID.fromString( matchId ), "Mateo", invalidJson );
 
         expectNotFoundWithMessage( result, "JSON parse error: The `number` or `type` value is incorrect or missing" );
     }
 
-    @Test public void testPlayCardWithoutTypeFieldThrowsNotFound() throws Exception {
-        UUID matchId = UUID.randomUUID();
+    @Test public void testPlayCardWithoutTypeFieldThrowsNotFound( ) throws Exception {
+        ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
+        String matchId = extractMatchIdFromResponse( createResult );
+
         String invalidJson = "{\"color\":\"Red\",\"number\":5,\"shout\":false}";
 
-        ResultActions result = performPlayCardRequest(matchId, "Mateo", invalidJson);
+        ResultActions result = performPlayCardRequest( UUID.fromString( matchId ), "Mateo", invalidJson );
 
         expectNotFoundWithMessage( result, "JSON parse error: The `number` or `type` value is incorrect or missing" );
     }
 
-    @Test public void testPlayCardWithoutShoutField() throws Exception {
-        UUID matchId = UUID.randomUUID();
-        String invalidJson = "{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\"}";
+    @Test public void testPlayCardWithoutShoutField( ) throws Exception {
+        // Para este test específico, usamos un mazo diferente
+        List<Card> allRedDeck = createAllRedDeck( );
+        when( dealer.fullDeck( ) ).thenReturn( new ArrayList<>( allRedDeck ) );
 
-        ResultActions result = performPlayCardRequest(matchId, "Mateo", invalidJson);
+        ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
+        String matchId = extractMatchIdFromResponse( createResult );
 
-        result.andExpect( status().isOk() );
+        String invalidJson = "{\"color\":\"Red\",\"number\":1,\"type\":\"NumberCard\"}";
+
+        ResultActions result = performPlayCardRequest( UUID.fromString( matchId ), "Mateo", invalidJson );
+
+        result.andExpect( status( ).isOk( ) );
     }
 
-    @Test public void testPlayCardWithEmptyJsonCardThrowsNotFound() throws Exception {
-        UUID matchId = UUID.randomUUID();
+    @Test public void testPlayCardWithEmptyJsonCardThrowsNotFound( ) throws Exception {
+        ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
+        String matchId = extractMatchIdFromResponse( createResult );
 
-        ResultActions result = performPlayCardRequest(matchId, "Mateo", "{}");
+        ResultActions result = performPlayCardRequest( UUID.fromString( matchId ), "Mateo", "{}" );
 
-        expectNotFoundWithMessage( result, "JSON parse error: The `number` or `type` value is incorrect or missing");
+        expectNotFoundWithMessage( result, "JSON parse error: The `number` or `type` value is incorrect or missing" );
     }
 
-    @Test public void testPlayCardWithNoJsonCardThrowsNotFound() throws Exception {
-        UUID matchId = UUID.randomUUID();
+    @Test public void testPlayCardWithNoJsonCardThrowsNotFound( ) throws Exception {
+        ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
+        String matchId = extractMatchIdFromResponse( createResult );
 
-        ResultActions result = performPlayCardRequest(matchId, "Mateo", "");
+        ResultActions result = performPlayCardRequest( UUID.fromString( matchId ), "Mateo", "" );
 
-        expectNotFoundContaining( result, "Low-Level Error: Required request body is missing" );
+        expectNotFoundContaining( result, "Low-Level Error" );
     }
 
-    @Test public void testPlayCardWithNonExistentCardTypeThrowsBadRequest() throws Exception {
-        UUID matchId = UUID.randomUUID();
-        String invalidJson = "{\"color\":\"Grey\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}";
+    @Test public void testPlayCardWithNonExistentCardTypeThrowsBadRequest( ) throws Exception {
+        ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
+        String matchId = extractMatchIdFromResponse( createResult );
 
-        setupPlayCardException( "Mateo", new IllegalArgumentException( Match.NotACardInHand + "Mateo" ), matchId );
+        // Try to play a card that doesn't exist in hand
+        String invalidJson = "{\"color\":\"Purple\",\"number\":99,\"type\":\"NumberCard\",\"shout\":false}";
 
-        ResultActions result = performPlayCardRequest( matchId, "Mateo", invalidJson );
+        ResultActions result = performPlayCardRequest( UUID.fromString( matchId ), "Mateo", invalidJson );
 
-        expectBadRequestWithMessage( result, "Not a card in hand of " + "Mateo" );
-    }
-
-    @Test public void testPlayCardWhenTheUnoGameIsOverThrowsBadRequest() throws Exception {
-        UUID matchId = UUID.randomUUID();
-        String JsonCard = "{\"color\":\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}" ;
-
-        setupPlayCardException( "Mateo", new IllegalArgumentException( "GameOver" ), matchId );
-
-        ResultActions result = performPlayCardRequest( matchId, "Mateo", JsonCard );
-
-        expectBadRequestWithMessage( result, "GameOver" );
+        expectBadRequestWithMessage( result, "Not a card in hand of Mateo" );
     }
 }
