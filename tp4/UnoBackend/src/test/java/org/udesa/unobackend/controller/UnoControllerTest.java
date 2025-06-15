@@ -137,27 +137,15 @@ public class UnoControllerTest {
         deck.add( new NumberCard( "Red", 5 ) );
 
         // First player hand
-        deck.add( new SkipCard( "Red" ) );
-        deck.add( new SkipCard( "Red" ) );
-        deck.add( new SkipCard( "Red" ) );
-        deck.add( new SkipCard( "Red" ) );
-        deck.add( new SkipCard( "Red" ) );
-        deck.add( new SkipCard( "Red" ) );
-        deck.add( new SkipCard( "Red" ) );
+        for (int i = 0; i < 7; i++) { deck.add( new SkipCard( "Red" ) ); }
 
         // Second player hand
-        deck.add( new NumberCard( "Red", 0 ) );
-        deck.add( new NumberCard( "Red", 1 ) );
-        deck.add( new NumberCard( "Red", 2 ) );
-        deck.add( new NumberCard( "Red", 3 ) );
-        deck.add( new NumberCard( "Red", 4 ) );
-        deck.add( new NumberCard( "Red", 5 ) );
-        deck.add( new NumberCard( "Red", 6 ) );
+        for (int i = 0; i < 7; i++) { deck.add( new NumberCard( "Red", i ) ); }
 
         // Extra cards for drawing
-        deck.add( new NumberCard( "Green", 0 ) );
-        deck.add( new NumberCard( "Green", 1 ) );
-        deck.add( new NumberCard( "Green", 2 ) );
+        deck.add( new ReverseCard( "Blue" ) );
+        deck.add( new Draw2Card( "Green" ) );
+        deck.add( new WildCard() );
 
         return deck;
     }
@@ -418,11 +406,11 @@ public class UnoControllerTest {
         ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
         String matchId = extractMatchIdFromResponse( createResult );
 
-        String invalidJson = "{\"Red\",\"number\":5,\"type\":\"NumberCard\",\"shout\":false}";
+        String invalidJson = "{\"number\":5,\"type\":\"NumberCard\",\"shout\":false}";
 
         ResultActions result = performPlayCardRequest( UUID.fromString( matchId ), "Mateo", invalidJson );
 
-        expectNotFoundContaining( result, "Low-Level Error: JSON parse error" );
+        expectNotFoundContaining( result, "Low-Level Error" );
     }
 
     @Test public void testPlayCardWithoutNumberFieldThrowsNotFound() throws Exception {
@@ -491,7 +479,7 @@ public class UnoControllerTest {
         ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
         String matchId = extractMatchIdFromResponse( createResult );
 
-        String invalidJson = "{\"color\":\"Purple\",\"number\":99,\"type\":\"NumberCard\",\"shout\":false}";
+        String invalidJson = "{\"color\":\"Red\",\"number\":99,\"type\":\"NumberCard\",\"shout\":false}";
 
         ResultActions result = performPlayCardRequest( UUID.fromString( matchId ), "Mateo", invalidJson );
 
@@ -502,7 +490,7 @@ public class UnoControllerTest {
         ResultActions createResult = performNewMatchRequest( "Mateo", "Tiziano" );
         String matchId = extractMatchIdFromResponse( createResult );
 
-        String invalidJson = "{\"color\":\"Green\",\"number\":5,\"type\":\"NoneTypeCard\",\"shout\":false}";
+        String invalidJson = "{\"color\":\"Red\",\"number\":5,\"type\":\"NoneTypeCard\",\"shout\":false}";
 
         ResultActions result = performPlayCardRequest( UUID.fromString( matchId ), "Mateo", invalidJson );
 

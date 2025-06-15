@@ -25,8 +25,8 @@ public class UnoController {
         return ResponseEntity.status( HttpStatus.BAD_REQUEST ).body( "Business Error: " + exception.getMessage() );
     }
 
-    @ExceptionHandler({ClassNotFoundException.class, NoSuchMethodException.class, InvocationTargetException.class})
-    public ResponseEntity<String> handleReflectionExceptions(Exception exception) {
+    @ExceptionHandler( {ClassNotFoundException.class, NoSuchMethodException.class, InvocationTargetException.class} )
+    public ResponseEntity<String> handleReflectionExceptions( Exception exception ) {
         return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Low-Level Error: JSON parse error: The `number` or `type` value is incorrect or missing" );
     }
 

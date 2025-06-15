@@ -20,25 +20,25 @@ public class UnoService {
         return matchID;
     }
 
-    public void playCard(UUID matchId, String player, Card card) {
-        getMatch(matchId).play( player, card);
+    public void playCard( UUID matchId, String player, Card card ) {
+        getMatch( matchId ).play( player, card );
     }
 
-    public void drawCard(UUID matchId, String player) {
-        getMatch(matchId).drawCard(player);
+    public void drawCard( UUID matchId, String player ) {
+        getMatch( matchId ).drawCard( player );
     }
 
-    public Card activeCard(UUID matchId) {
-        return getMatch(matchId).activeCard();
+    public Card activeCard( UUID matchId ) {
+        return getMatch( matchId ).activeCard();
     }
 
-    public List<Card> playerHand(UUID matchId) {
-        return getMatch(matchId).playerHand();
+    public List<Card> playerHand( UUID matchId ) {
+        return getMatch( matchId ).playerHand();
     }
 
-    private Match getMatch(UUID matchId) {
-        Match match = matchSessions.get(matchId);
-        if (match == null) { throw new RuntimeException( "Match with ID " + matchId + " not found." ); }
+    private Match getMatch( UUID matchId ) {
+        Match match = matchSessions.get( matchId );
+        if ( match == null ) { throw new RuntimeException( "Match with ID " + matchId + " not found." ); }
         return match;
     }
 }
