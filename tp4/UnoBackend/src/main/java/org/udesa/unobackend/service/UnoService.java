@@ -38,9 +38,7 @@ public class UnoService {
 
     private Match getMatch(UUID matchId) {
         Match match = matchSessions.get(matchId);
-        if (match == null) {
-            throw new RuntimeException( "Match with ID " + matchId + " not found." );
-        }
+        if (match == null) { throw new RuntimeException( "Match with ID " + matchId + " not found." ); }
         return match;
     }
 }

@@ -45,7 +45,7 @@ public class UnoController {
     }
 
     @GetMapping("activecard/{matchId}") public ResponseEntity activeCard( @PathVariable UUID matchId ) {
-        return ResponseEntity.ok( unoService.activeCard(matchId).asJson() ); // ¿Debemos devolver la carta como Json desde el service o lo dejamos así?
+        return ResponseEntity.ok( unoService.activeCard(matchId).asJson() );
     }
 
     @GetMapping("playerhand/{matchId}") public ResponseEntity playerHand( @PathVariable UUID matchId ) {
